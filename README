@@ -1,0 +1,10 @@
+README
+
+To listen for remote connections on a Linux machine:
+1) Extract this javacyc.jar JAR and cd into its extracted root directory
+2) Compile unixdomainsocket_UnixDomainSocket.c to libunixdomainsocket.so
+	-use compile_native_socket.sh script
+	-adjust include directories.  Search for jni.h.  Use its containing directory and its linux/subdirectory.
+3) Start the JavacycServer listener
+	-use listenForRemoteConnections.sh script
+	-edit PORT variable or add -verbose or -log arguments in script if desired
