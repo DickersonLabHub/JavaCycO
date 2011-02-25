@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,8 @@ public class Network
 	private HashSet<String> nodeIDs,edgeCodes;
 	private HashMap<String,Integer> GMLids;
 	private HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts;
+
+	
 	
 	public static String REACTANT = "REACTANT";
 	public static String PRODUCT = "PRODUCT";
@@ -142,13 +145,21 @@ public class Network
 	}
 	
 	/**
-	 * Calls writeGML(w,true)
+	 * Calls writeGML(w,true*)
 	 * @param w the PrintStream to write to.
 	 * @throws PtoolsErrorException
 	 */
 	public void writeGML(PrintStream w)
 	throws PtoolsErrorException {
-		writeGML(w,true,true,true,true);
+		writeGML(w,true,true,true,true,true,true);
+	}
+
+	public void addMappedAttribute(String name,Map<String,String> map)
+	{
+		for(String nodeId : map.keySet())
+		{
+			this.addNodeAtt(nodeId, name, map.get(nodeId));
+		}
 	}
 	
 	
@@ -158,10 +169,12 @@ public class Network
 	 * @param rich if true, writes slot values that are lists as nested lists as well as Cytoscape-specific graphics attributes. Else, omits slot values that are lists and graphics properties.
 	 * @param weights if true, writes stoichiometry coefficients as edge weights.  else, all edges are weighted 1.
 	 * @param directed if true, writes a directed graph and reversible reaction edges are duplicated in reverse.  else, an undirected graph is written.
-	 * @param directed if true, writes sublists as nested GML lists.  else, write.
+	 * @param GMLlists if true, writes sublists as nested GML lists.  else, write.
+	 * @param stats if true, also write extra statistics at the end used by other tools.
+	 * @param pathways if true, each entity has an attribute listing all pathways it is a member of.  Slows things down.
 	 * @throws PtoolsErrorException
 	 */
-	public void writeGML(PrintStream w,boolean rich,boolean weights,boolean directed,boolean GMLlists)
+	public void writeGML(PrintStream w,boolean rich,boolean weights,boolean directed,boolean GMLlists,boolean stats,boolean pathways)
 	throws PtoolsErrorException {
 		String quote = GMLlists ? "" : "\"";
 		System.out.println("Writing "+name+" [rich,weights,directed] = "+rich+","+weights+","+directed);
@@ -176,7 +189,7 @@ public class Network
 			w.println("\t\tid "+GMLids.get(f.getLocalID()));
 			w.println("\t\tlabel "+quote+cleanString(f.getLocalID(),GMLlists)+quote);
 			w.println("\t\tCOMMON_NAME "+quote+cleanString(f.getCommonName(),GMLlists)+quote);
-			w.println("\t\tclass "+quote+cleanString(f.getClass().getName().replace("javacyco.",""),GMLlists)+quote);
+			w.println("\t\tclass "+quote+cleanString(f.getClass().getName(),GMLlists)+quote);
 			if(rich)
 			{
 				for(String slot : f.getSlots().keySet())
@@ -207,17 +220,29 @@ public class Network
 					fill = Integer.toHexString(Color.YELLOW.getRGB() & 0x00ffffff );
 				}
 				w.println("\t\tgraphics [ type "+type+" fill \"#"+fill+"\" ]");
-				HashSet<String> pwys = new HashSet<String>();
-				for(Frame pwy : f.getPathways())
+				if(pathways)
 				{
-					pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					HashSet<String> pwys = new HashSet<String>();
+					for(Frame pwy : f.getPathways())
+					{
+						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					}
+					for(String pwyName : pwys)
+					{
+						if(!pathwayMembership.containsKey(pwyName)) pathwayMembership.put(pwyName,new ArrayList<String>());
+						pathwayMembership.get(pwyName).add(f.getLocalID());
+					}
+					w.println("\t\tpathway "+quote+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+quote);
 				}
-				for(String pwyName : pwys)
+				if(nodeAtts.containsKey(f.getLocalID()))
 				{
-					if(!pathwayMembership.containsKey(pwyName)) pathwayMembership.put(pwyName,new ArrayList<String>());
-					pathwayMembership.get(pwyName).add(f.getLocalID());
+					HashMap<String,ArrayList<String>> extraAtts = nodeAtts.get(f.getLocalID());
+					for(String name : extraAtts.keySet())
+					{
+						w.println("\t\t"+name+" "+quote+(GMLlists ? ArrayList2GMLList(extraAtts.get(name)) : ArrayList2textList(extraAtts.get(name)))+quote);
+					}
+					
 				}
-				w.println("\t\tpathway "+quote+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+quote);
 			}
 			w.println("\t]");
 		}
@@ -231,12 +256,15 @@ public class Network
 			if(weights) w.println("\t\tweight "+e.attributes.get("stoichiometry"));
 			if(rich)
 			{
-				HashSet<String> pwys = new HashSet<String>();
-				for(Frame pwy : e.source.getPathways())
-					pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
-				for(Frame pwy : e.target.getPathways())
-					pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
-				w.println("\t\tpathway "+quote+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+quote);
+				if(pathways)
+				{
+					HashSet<String> pwys = new HashSet<String>();
+					for(Frame pwy : e.source.getPathways())
+						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					for(Frame pwy : e.target.getPathways())
+						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					w.println("\t\tpathway "+quote+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+quote);
+				}
 			}
 			w.println("\t]");
 			if(directed)
@@ -269,18 +297,21 @@ public class Network
 
 		}
 		w.println("]");
-		for(String dir : reactionDirections.keySet())
+		if(stats)
 		{
-			System.out.println(dir+"\t"+reactionDirections.get(dir));
-		}
-		for(String pwyName : pathwayMembership.keySet())
-		{
-			System.out.print("***PATHWAYS\t"+pwyName.replace(" ","_"));
-			for(String id : pathwayMembership.get(pwyName))
+			for(String dir : reactionDirections.keySet())
 			{
-				System.out.print("\t"+id);
+				System.out.println(dir+"\t"+reactionDirections.get(dir));
 			}
-			System.out.println("");
+			for(String pwyName : pathwayMembership.keySet())
+			{
+				System.out.print("***PATHWAYS\t"+pwyName.replace(" ","_"));
+				for(String id : pathwayMembership.get(pwyName))
+				{
+					System.out.print("\t"+id);
+				}
+				System.out.println("");
+			}
 		}
 	}
 	

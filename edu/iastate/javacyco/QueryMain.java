@@ -64,7 +64,7 @@ public class QueryMain {
 				{
 					net.importNetwork(p.getNetwork());
 				}
-				net.writeGML(new PrintStream(new FileOutputStream(listFilename+".pathways.gml")),true,true,true,false);
+				net.writeGML(new PrintStream(new FileOutputStream(listFilename+".pathways.gml")),true,true,true,false,true,true);
 			}
 		}
 		catch(Exception ex)

@@ -14,12 +14,6 @@ import java.text.SimpleDateFormat;
 import java.net.*;
 import java.util.ArrayList;
 
-import unixdomainsocket.UnixDomainSocket;
-
-
-import javacyco.Frame;
-import javacyco.JavacycConnection;
-
 
 public class JavacycServer
 {
