@@ -666,8 +666,9 @@ public class JavacycConnection {
        @return an ArrayList of all-types of instance
     */
     public ArrayList getInstanceAllTypes(String instance)
-     throws PtoolsErrorException {
-	return callFuncArray("get-instance-all-types '" + instance);
+	 throws PtoolsErrorException {
+	    if(this.getFrameType(instance).equals(":CLASS")) return callFuncArray("get-class-all-supers '" + instance);
+	    else return callFuncArray("get-instance-all-types '" + instance);
     }
     
 
