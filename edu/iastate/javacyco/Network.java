@@ -185,66 +185,7 @@ public class Network
 		w.println("graph [\n\tlabel \""+this.name+"\"\n\tdirected "+(directed ? "1" : "0"));
 		for(Frame f : this.nodes)
 		{
-			w.println("\tnode [");
-			w.println("\t\tid "+GMLids.get(f.getLocalID()));
-			w.println("\t\tlabel "+quote+cleanString(f.getLocalID(),GMLlists)+quote);
-			w.println("\t\tCOMMON_NAME "+quote+cleanString(f.getCommonName(),GMLlists)+quote);
-			w.println("\t\tclass "+quote+cleanString(f.getClass().getName(),GMLlists)+quote);
-			if(rich)
-			{
-				for(String slot : f.getSlots().keySet())
-				{
-					if(slot.equals("COMMON-NAME")) continue;
-					ArrayList val = f.getSlotValues(slot);
-					if(val.size()==0) continue;
-					w.print("\t\t"+slot.replace("-","_").replace(":","").replace("?","").replace("+","_")+" ");
-					w.println(quote + (GMLlists ? ArrayList2GMLList(val) : ArrayList2textList(val))+quote);
-				}
-				String type = "rectangle";
-				String fill = Integer.toHexString(Color.CYAN.getRGB() & 0x00ffffff );
-				if(f instanceof Compound)
-				{
-					type = "hexagon";
-					fill = Integer.toHexString(Color.GREEN.getRGB() & 0x00ffffff );
-				}
-				else if(f instanceof Reaction)
-				{
-					type = "ellipse";
-					fill = Integer.toHexString(Color.LIGHT_GRAY.getRGB() & 0x00ffffff );
-					String dir = f.getSlotValue("REACTION-DIRECTION");
-					if(!reactionDirections.containsKey(dir)) reactionDirections.put(dir,0);
-					reactionDirections.put(dir,reactionDirections.get(dir)+1);
-				}
-				else if(f instanceof Gene)
-				{
-					fill = Integer.toHexString(Color.YELLOW.getRGB() & 0x00ffffff );
-				}
-				w.println("\t\tgraphics [ type "+type+" fill \"#"+fill+"\" ]");
-				if(pathways)
-				{
-					HashSet<String> pwys = new HashSet<String>();
-					for(Frame pwy : f.getPathways())
-					{
-						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
-					}
-					for(String pwyName : pwys)
-					{
-						if(!pathwayMembership.containsKey(pwyName)) pathwayMembership.put(pwyName,new ArrayList<String>());
-						pathwayMembership.get(pwyName).add(f.getLocalID());
-					}
-					w.println("\t\tpathway "+quote+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+quote);
-				}
-				if(nodeAtts.containsKey(f.getLocalID()))
-				{
-					HashMap<String,ArrayList<String>> extraAtts = nodeAtts.get(f.getLocalID());
-					for(String name : extraAtts.keySet())
-					{
-						w.println("\t\t"+name+" "+quote+(GMLlists ? ArrayList2GMLList(extraAtts.get(name)) : ArrayList2textList(extraAtts.get(name)))+quote);
-					}
-					
-				}
-			}
-			w.println("\t]");
+			w.print(f.getGML(rich, GMLlists, pathwayMembership, nodeAtts, GMLids));
 		}
 		for(Network.Edge e : this.edges)
 		{

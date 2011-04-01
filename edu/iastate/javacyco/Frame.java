@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.awt.Color;
 
 /**
 This class implements in Java the Frame object on which Pathway Geneome Databases and Knowledge Bases (Karp, et al) are based 
@@ -815,4 +816,75 @@ public class Frame
 	@Override public int hashCode() {
 		return this.ID.hashCode();
 	  }
+
+	public String getGML(HashMap<String,Integer> GMLids)
+	throws PtoolsErrorException {
+	    return this.getGML(true, true, null, null, GMLids);
+	}
+
+	public String getGML(boolean rich, boolean GMLlists, HashMap<String,ArrayList<String>> pathwayMembership, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts, HashMap<String,Integer> GMLids)
+	throws PtoolsErrorException {
+	    boolean pathways = pathwayMembership!=null && pathwayMembership.size()>0;
+	    String quote = GMLlists ? "" : "\"";
+	    String ret = "\tnode [\n";
+	    ret += "\t\tid "+GMLids.get(getLocalID())+"\n";
+	    ret += "\t\tlabel "+quote+Network.cleanString(getLocalID(),GMLlists)+quote+"\n";
+	    ret += "\t\tCOMMON_NAME "+quote+Network.cleanString(getCommonName(),GMLlists)+quote+"\n";
+	    ret += "\t\tclass "+quote+Network.cleanString(getClass().getName(),GMLlists)+quote+"\n";
+	    if(rich)
+	    {
+		for(String slot : getSlots().keySet())
+		{
+			if(slot.equals("COMMON-NAME")) continue;
+			ArrayList val = getSlotValues(slot);
+			if(val.size()==0) continue;
+			ret += "\t\t"+slot.replace("-","_").replace(":","").replace("?","").replace("+","_")+" "+"\n";
+			ret += quote + (GMLlists ? Network.ArrayList2GMLList(val) : Network.ArrayList2textList(val))+quote+"\n";
+		}
+		String type = "rectangle";
+		String fill = Integer.toHexString(Color.CYAN.getRGB() & 0x00ffffff );
+		if(this instanceof Compound)
+		{
+			type = "hexagon";
+			fill = Integer.toHexString(Color.GREEN.getRGB() & 0x00ffffff );
+		}
+		else if(this instanceof Reaction)
+		{
+			type = "ellipse";
+			fill = Integer.toHexString(Color.LIGHT_GRAY.getRGB() & 0x00ffffff );
+		}
+		else if(this instanceof Gene)
+		{
+			fill = Integer.toHexString(Color.YELLOW.getRGB() & 0x00ffffff );
+		}
+		ret += "\t\tgraphics [ type "+type+" fill \"#"+fill+"\" ]"+"\n";
+		if(pathways)
+		{
+			HashSet<String> pwys = new HashSet<String>();
+			for(Frame pwy : getPathways())
+			{
+				pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+			}
+			for(String pwyName : pwys)
+			{
+				if(!pathwayMembership.containsKey(pwyName)) pathwayMembership.put(pwyName,new ArrayList<String>());
+				pathwayMembership.get(pwyName).add(getLocalID());
+			}
+			ret += "\t\tpathway "+quote+(GMLlists ? Network.ArrayList2GMLList(new ArrayList<String>(pwys)) : Network.ArrayList2textList(new ArrayList<String>(pwys)))+quote+"\n";
+		}
+		if(nodeAtts!=null && nodeAtts.containsKey(getLocalID()))
+		{
+			HashMap<String,ArrayList<String>> extraAtts = nodeAtts.get(getLocalID());
+			for(String name : extraAtts.keySet())
+			{
+				ret += "\t\t"+name+" "+quote+(GMLlists ? Network.ArrayList2GMLList(extraAtts.get(name)) : Network.ArrayList2textList(extraAtts.get(name)))+quote+"\n";
+			}
+
+		}
+	    }
+	    ret += "\t]\n";
+	    return ret;
+	}
+
+
 }
