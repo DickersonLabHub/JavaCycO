@@ -928,6 +928,11 @@ public class JavacycConnection {
      throws PtoolsErrorException {
 	return callFuncArray("enzymes-of-reaction '" + rxn);
     }
+    
+    public ArrayList specificFormsOfReaction(String rxn)
+    throws PtoolsErrorException {
+	return callFuncArray("specific-forms-of-rxn '" + rxn);
+   }
 
     /**
        Calls the PTIL function, reaction-reactants-and-products
@@ -1443,7 +1448,7 @@ public class JavacycConnection {
     // Private methods for querying, retrieving results, calling functions,
     // and lisp list parsing
     
-    private ArrayList callFuncArray(String func) throws PtoolsErrorException
+    public ArrayList callFuncArray(String func) throws PtoolsErrorException
     {
     	return callFuncArray(func,true);
     }
