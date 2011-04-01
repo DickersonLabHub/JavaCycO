@@ -803,7 +803,7 @@ public class Frame
 	    if (this == aThat) return true;
 
 	    //Check for similar class
-	    if (aThat instanceof Frame) return false;
+	    if (!(aThat instanceof Frame)) return false;
 	    
 	    //Cast to native type
 	    Frame that = (Frame)aThat;
