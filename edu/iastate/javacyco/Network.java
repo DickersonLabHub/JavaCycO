@@ -189,53 +189,7 @@ public class Network
 		}
 		for(Network.Edge e : this.edges)
 		{
-			w.println("\tedge [");
-			//String[] infoParts = e.info.split("\t");//infoParts[0]
-			w.println("\t\tlabel \""+e.attributes.get("type")+"\"");
-			w.println("\t\tsource "+GMLids.get(e.source.getLocalID()));
-			w.println("\t\ttarget "+GMLids.get(e.target.getLocalID()));
-			if(weights) w.println("\t\tweight "+e.attributes.get("stoichiometry"));
-			if(rich)
-			{
-				if(pathways)
-				{
-					HashSet<String> pwys = new HashSet<String>();
-					for(Frame pwy : e.source.getPathways())
-						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
-					for(Frame pwy : e.target.getPathways())
-						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
-					w.println("\t\tpathway "+quote+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+quote);
-				}
-			}
-			w.println("\t]");
-			if(directed)
-			{
-				if(e.source instanceof Reaction)
-				{
-					if(((Reaction)e.source).isReversible())
-					{
-						w.println("\tedge [");
-						w.println("\t\tlabel \""+e.attributes.get("type")+"\"");
-						w.println("\t\tsource "+GMLids.get(e.target.getLocalID()));
-						w.println("\t\ttarget "+GMLids.get(e.source.getLocalID()));
-						if(weights) w.println("\t\tweight "+e.attributes.get("stoichiometry"));
-						w.println("\t]");
-					}
-				}
-				else if(e.target instanceof Reaction)
-				{
-					if(((Reaction)e.target).isReversible())
-					{
-						w.println("\tedge [");
-						w.println("\t\tlabel \""+e.attributes.get("type")+"\"");
-						w.println("\t\tsource "+GMLids.get(e.target.getLocalID()));
-						w.println("\t\ttarget "+GMLids.get(e.source.getLocalID()));
-						if(weights) w.println("\t\tweight "+e.attributes.get("stoichiometry"));
-						w.println("\t]");
-					}
-				}
-			}
-
+			w.print(e.getGML(rich, directed, weights, GMLlists, pathwayMembership, nodeAtts, GMLids));
 		}
 		w.println("]");
 		if(stats)
@@ -255,6 +209,8 @@ public class Network
 			}
 		}
 	}
+
+
 	
 	/**
 	Set this Network's name.
@@ -739,6 +695,117 @@ public class Network
 		public String getInfo()
 		{
 			return info;
+		}
+
+		public String getGML(boolean rich, boolean directed, boolean weights, boolean GMLlists, HashMap<String,ArrayList<String>> pathwayMembership, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts, HashMap<String,Integer> GMLids)
+		throws PtoolsErrorException {
+			boolean pathways = pathwayMembership!=null && pathwayMembership.size()>0;
+			String quote = GMLlists ? "" : "\"";
+			String ret = "";
+			ret += "\tedge [\n";
+			//String[] infoParts = this.info.split("\t");//infoParts[0]
+			ret += "\t\tlabel \""+this.attributes.get("type")+"\"\n";
+			ret += "\t\tsource "+GMLids.get(this.source.getLocalID())+"\n";
+			ret += "\t\ttarget "+GMLids.get(this.target.getLocalID())+"\n";
+			if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
+			if(rich)
+			{
+				if(pathways)
+				{
+					HashSet<String> pwys = new HashSet<String>();
+					for(Frame pwy : this.source.getPathways())
+						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					for(Frame pwy : this.target.getPathways())
+						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					ret += "\t\tpathway "+quote+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+quote+"\n";
+				}
+			}
+			ret += "\t]\n";
+			if(directed)
+			{
+				if(this.source instanceof Reaction)
+				{
+					if(((Reaction)this.source).isReversible())
+					{
+						ret += "\tedge [\n";
+						ret += "\t\tlabel \""+this.attributes.get("type")+"\n";
+						ret += "\t\tsource "+GMLids.get(this.target.getLocalID())+"\n";
+						ret += "\t\ttarget "+GMLids.get(this.source.getLocalID())+"\n";
+						if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
+						ret += "\t]\n";
+					}
+				}
+				else if(this.target instanceof Reaction)
+				{
+					if(((Reaction)this.target).isReversible())
+					{
+						ret += "\tedge [\n";
+						ret += "\t\tlabel \""+this.attributes.get("type")+"\"\n";
+						ret += "\t\tsource "+GMLids.get(this.target.getLocalID())+"\n";
+						ret += "\t\ttarget "+GMLids.get(this.source.getLocalID())+"\n";
+						if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
+						ret += "\t]\n";
+					}
+				}
+			}
+			return ret;
+		}
+
+		//	  <edge label="6 (pp) 5" source="-7" target="-6">
+//    <att type="string" name="canonicalName" value="6 (pp) 5"/>
+//    <att type="string" name="interaction" value="pp" cy:editable="false"/>
+//    <graphics width="1" fill="#0000ff" cy:sourceArrow="0" cy:targetArrow="0" cy:sourceArrowColor="#000000" cy:targetArrowColor="#000000" cy:edgeLabelFont="Default-0-10" cy:edgeLineType="SOLID" cy:curved="STRAIGHT_LINES"/>
+//  </edge>
+		public String getXGMML(boolean rich, boolean directed, boolean weights, boolean GMLlists, boolean pathways, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts, HashMap<String,Integer> GMLids)
+		throws PtoolsErrorException {
+			String ret = "";
+			ret += "<edge label=\"6 (pp) 5\" source=\"-7\" target=\"-6\">\n";
+			//String[] infoParts = this.info.split("\t");//infoParts[0]
+			ret += "\t\tlabel \""+this.attributes.get("type")+"\"\n";
+			ret += "\t\tsource "+GMLids.get(this.source.getLocalID())+"\n";
+			ret += "\t\ttarget "+GMLids.get(this.target.getLocalID())+"\n";
+			if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
+			if(rich)
+			{
+				if(pathways)
+				{
+					HashSet<String> pwys = new HashSet<String>();
+					for(Frame pwy : this.source.getPathways())
+						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					for(Frame pwy : this.target.getPathways())
+						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+					ret += "\t\tpathway "+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+"\n";
+				}
+			}
+			ret += "\t]\n";
+			if(directed)
+			{
+				if(this.source instanceof Reaction)
+				{
+					if(((Reaction)this.source).isReversible())
+					{
+						ret += "\tedge [\n";
+						ret += "\t\tlabel \""+this.attributes.get("type")+"\n";
+						ret += "\t\tsource "+GMLids.get(this.target.getLocalID())+"\n";
+						ret += "\t\ttarget "+GMLids.get(this.source.getLocalID())+"\n";
+						if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
+						ret += "\t]\n";
+					}
+				}
+				else if(this.target instanceof Reaction)
+				{
+					if(((Reaction)this.target).isReversible())
+					{
+						ret += "\tedge [\n";
+						ret += "\t\tlabel \""+this.attributes.get("type")+"\"\n";
+						ret += "\t\tsource "+GMLids.get(this.target.getLocalID())+"\n";
+						ret += "\t\ttarget "+GMLids.get(this.source.getLocalID())+"\n";
+						if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
+						ret += "\t]\n";
+					}
+				}
+			}
+			return ret;
 		}
 	}
 }

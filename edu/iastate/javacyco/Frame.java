@@ -817,6 +817,38 @@ public class Frame
 		return this.ID.hashCode();
 	  }
 
+	public String getColor()
+	{
+		String fill = Integer.toHexString(Color.CYAN.getRGB() & 0x00ffffff );
+		if(this instanceof Compound)
+		{
+			fill = Integer.toHexString(Color.GREEN.getRGB() & 0x00ffffff );
+		}
+		else if(this instanceof Reaction)
+		{
+			fill = Integer.toHexString(Color.LIGHT_GRAY.getRGB() & 0x00ffffff );
+		}
+		else if(this instanceof Gene)
+		{
+			fill = Integer.toHexString(Color.YELLOW.getRGB() & 0x00ffffff );
+		}
+		return fill;
+	}
+
+	public String getCytoscapeShape()
+	{
+		String type = "rectangle";
+		if(this instanceof Compound)
+		{
+			type = "hexagon";
+		}
+		else if(this instanceof Reaction)
+		{
+			type = "ellipse";
+		}
+		return type;
+	}
+
 	public String getGML(HashMap<String,Integer> GMLids)
 	throws PtoolsErrorException {
 	    return this.getGML(true, true, null, null, GMLids);
@@ -841,22 +873,8 @@ public class Frame
 			ret += "\t\t"+slot.replace("-","_").replace(":","").replace("?","").replace("+","_")+" "+"\n";
 			ret += quote + (GMLlists ? Network.ArrayList2GMLList(val) : Network.ArrayList2textList(val))+quote+"\n";
 		}
-		String type = "rectangle";
-		String fill = Integer.toHexString(Color.CYAN.getRGB() & 0x00ffffff );
-		if(this instanceof Compound)
-		{
-			type = "hexagon";
-			fill = Integer.toHexString(Color.GREEN.getRGB() & 0x00ffffff );
-		}
-		else if(this instanceof Reaction)
-		{
-			type = "ellipse";
-			fill = Integer.toHexString(Color.LIGHT_GRAY.getRGB() & 0x00ffffff );
-		}
-		else if(this instanceof Gene)
-		{
-			fill = Integer.toHexString(Color.YELLOW.getRGB() & 0x00ffffff );
-		}
+		String type = this.getCytoscapeShape();
+		String fill = this.getColor();
 		ret += "\t\tgraphics [ type "+type+" fill \"#"+fill+"\" ]"+"\n";
 		if(pathways)
 		{
@@ -883,6 +901,55 @@ public class Frame
 		}
 	    }
 	    ret += "\t]\n";
+	    return ret;
+	}
+
+		public String getXGMML(boolean rich, boolean pathways, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts,HashMap<String,Integer> GMLids)
+	throws PtoolsErrorException {
+	    
+//	      <node label="8" id="-9">
+//    <att type="string" name="canonicalName" value="8"/>
+//    <att type="string" name="label" value="8"/>
+//    <att type="string" name="name" value="GRMZM2G178120_T04"/>
+//    <graphics type="ELLIPSE" h="40.0" w="40.0" x="0.0" y="201.0" fill="#ff9999" width="1" outline="#666666" cy:nodeTransparency="1.0" cy:nodeLabelFont="SansSerif.bold-0-12" cy:borderLineType="solid"/>
+//  </node>
+
+	    String ret = "<node label=\""+this.getCommonName()+"\" id=\""+GMLids.get(getLocalID())+"\">\n";
+	    ret += "\t<att type=\"string\" name=\"canonicalName\" value=\""+getLocalID()+"\"/>\n";
+	    ret += "\t<att type=\"string\" name=\"label\" value=\""+this.getCommonName()+"\"/>\n";
+	    ret += "\t<att type=\"string\" name=\"class\" value=\""+this.getGFPtype()+"\"/>\n";
+	    if(rich)
+	    {
+		for(String slot : getSlots().keySet())
+		{
+			ArrayList val = getSlotValues(slot);
+			if(val.size()==0) continue;
+			ret += "\t<att type=\"string\" name=\""+slot+"\" value=\""+Network.ArrayList2textList(val).replace("\"","\\\"")+"\"/>\n";
+		}
+		String type = this.getCytoscapeShape();
+		String fill = this.getColor();
+		ret += "\t\tgraphics [ type "+type+" fill \"#"+fill+"\" ]"+"\n";
+		ret += "\t<graphics type=\""+type+"\" h=\"40.0\" w=\"40.0\" x=\"0.0\" y=\"0.0\" fill=\""+fill+"\" width=\"1\" outline=\"#666666\" cy:nodeTransparency=\"1.0\" cy:nodeLabelFont=\"SansSerif.bold-0-12\" cy:borderLineType=\"solid\"/>\n";
+		if(pathways)
+		{
+			HashSet<String> pwys = new HashSet<String>();
+			for(Frame pwy : getPathways())
+			{
+				pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+			}
+			ret += "\t<att type=\"string\" name=\"pathway\" value=\""+Network.ArrayList2textList(new ArrayList<String>(pwys))+"\"/>\n";
+		}
+		if(nodeAtts!=null && nodeAtts.containsKey(getLocalID()))
+		{
+			HashMap<String,ArrayList<String>> extraAtts = nodeAtts.get(getLocalID());
+			for(String name : extraAtts.keySet())
+			{
+				ret += "\t<att type=\"string\" name=\""+name+"\" value=\""+Network.ArrayList2textList(extraAtts.get(name))+"\"/>\n";
+			}
+
+		}
+	    }
+	    ret += "</node>\n";
 	    return ret;
 	}
 
