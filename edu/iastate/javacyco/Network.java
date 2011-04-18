@@ -258,8 +258,9 @@ public class Network
 	@param t the Frame at the "target" of the arrow.  t refers to "to"
 	@param e any String to be associated with this Edge.  When printing, tab-delimited files are written, so tab-delimited edge 
 	attributes fit well here.
+	@return the new Edge
 	*/
-	public void addEdge(Frame f, Frame t, String e)
+	public Edge addEdge(Frame f, Frame t, String e)
 	throws PtoolsErrorException {
 		Edge newEdge = new Edge(f,t,e);
 		if(!edgeCodes.contains(newEdge.getCode()))
@@ -269,6 +270,7 @@ public class Network
 			addNode(f,false);
 			addNode(t,false);
 		}
+		return newEdge;
 	}
 	
 	/**
@@ -759,50 +761,35 @@ public class Network
 		public String getXGMML(boolean rich, boolean directed, boolean weights, boolean GMLlists, boolean pathways, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts, HashMap<String,Integer> GMLids)
 		throws PtoolsErrorException {
 			String ret = "";
-			ret += "<edge label=\"6 (pp) 5\" source=\"-7\" target=\"-6\">\n";
+			ret += "<edge label=\""+this.attributes.get("type")+"\" source=\""+GMLids.get(this.source.getLocalID())+"\" target=\""+GMLids.get(this.target.getLocalID())+"\">\n";
 			//String[] infoParts = this.info.split("\t");//infoParts[0]
-			ret += "\t\tlabel \""+this.attributes.get("type")+"\"\n";
-			ret += "\t\tsource "+GMLids.get(this.source.getLocalID())+"\n";
-			ret += "\t\ttarget "+GMLids.get(this.target.getLocalID())+"\n";
-			if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
+			ret += "\t<att type=\"string\" name=\"canonicalName\" value=\""+this.attributes.get("type")+"\"/>";
+			ret += "\t<att type=\"string\" name=\"interaction\" value=\"pp\" cy:editable=\"false\"/>";
+			HashSet<String> pwys = new HashSet<String>();
 			if(rich)
 			{
+				
 				if(pathways)
 				{
-					HashSet<String> pwys = new HashSet<String>();
 					for(Frame pwy : this.source.getPathways())
 						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
 					for(Frame pwy : this.target.getPathways())
 						pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
-					ret += "\t\tpathway "+(GMLlists ? ArrayList2GMLList(new ArrayList<String>(pwys)) : ArrayList2textList(new ArrayList<String>(pwys)))+"\n";
+					this.attributes.put("pathway", Network.ArrayList2textList(new ArrayList<String>(pwys)));
+				}
+				for(String att : this.attributes.keySet())
+				{
+					ret += "\t<att type=\"string\" name=\""+att+"\" value=\"" + this.attributes.get(att) + "\"/>";
 				}
 			}
-			ret += "\t]\n";
+			ret += "</edge>\n";
 			if(directed)
 			{
-				if(this.source instanceof Reaction)
+				Network n = new Network("temp");
+				if( ( this.source instanceof Reaction && ((Reaction)this.source).isReversible() ) || ( this.target instanceof Reaction && ((Reaction)this.target).isReversible() ) )
 				{
-					if(((Reaction)this.source).isReversible())
-					{
-						ret += "\tedge [\n";
-						ret += "\t\tlabel \""+this.attributes.get("type")+"\n";
-						ret += "\t\tsource "+GMLids.get(this.target.getLocalID())+"\n";
-						ret += "\t\ttarget "+GMLids.get(this.source.getLocalID())+"\n";
-						if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
-						ret += "\t]\n";
-					}
-				}
-				else if(this.target instanceof Reaction)
-				{
-					if(((Reaction)this.target).isReversible())
-					{
-						ret += "\tedge [\n";
-						ret += "\t\tlabel \""+this.attributes.get("type")+"\"\n";
-						ret += "\t\tsource "+GMLids.get(this.target.getLocalID())+"\n";
-						ret += "\t\ttarget "+GMLids.get(this.source.getLocalID())+"\n";
-						if(weights) ret += "\t\tweight "+this.attributes.get("stoichiometry")+"\n";
-						ret += "\t]\n";
-					}
+					Edge ed = n.addEdge(this.target,this.source,"");
+					ret += ed.getXGMML(rich, directed, weights, GMLlists, pathways, nodeAtts, GMLids);
 				}
 			}
 			return ret;
