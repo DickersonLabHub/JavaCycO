@@ -901,7 +901,7 @@ public class Frame
 		}
 	    }
 	    ret += "\t]\n";
-	    return ret;
+	    return Network.removeHTML(ret);
 	}
 
 		public String getXGMML(boolean rich, boolean pathways, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts,HashMap<String,Integer> GMLids)
@@ -927,9 +927,8 @@ public class Frame
 			ret += "\t<att type=\"string\" name=\""+slot+"\" value=\""+Network.ArrayList2textList(val).replace("\"","\\\"")+"\"/>\n";
 		}
 		String type = this.getCytoscapeShape();
-		String fill = this.getColor();
-		ret += "\t\tgraphics [ type "+type+" fill \"#"+fill+"\" ]"+"\n";
-		ret += "\t<graphics type=\""+type+"\" h=\"40.0\" w=\"40.0\" x=\"0.0\" y=\"0.0\" fill=\""+fill+"\" width=\"1\" outline=\"#666666\" cy:nodeTransparency=\"1.0\" cy:nodeLabelFont=\"SansSerif.bold-0-12\" cy:borderLineType=\"solid\"/>\n";
+		String fill = String.format("%06X",Integer.parseInt(this.getColor(),16));
+		ret += "\t<graphics type=\""+type+"\" h=\"40.0\" w=\"40.0\" x=\"0.0\" y=\"0.0\" fill=\"#"+fill+"\" width=\"1\" outline=\"#666666\" cy:nodeTransparency=\"1.0\" cy:nodeLabelFont=\"SansSerif.bold-0-12\" cy:borderLineType=\"solid\"/>\n";
 		if(pathways)
 		{
 			HashSet<String> pwys = new HashSet<String>();
@@ -950,7 +949,7 @@ public class Frame
 		}
 	    }
 	    ret += "</node>\n";
-	    return ret;
+	    return Network.removeHTML(ret);
 	}
 
 
