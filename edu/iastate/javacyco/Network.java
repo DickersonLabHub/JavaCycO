@@ -262,7 +262,7 @@ public class Network
 		Network n = new Network("temp");
 		for(Network.Edge e : this.edges)
 		{
-			w.print(e.getXGMML(rich, weights, GMLlists, nodeAtts, GMLids));
+			w.print(e.getXGMML(rich, GMLlists, pathways, nodeAtts, GMLids));
 			if(directed)
 			{
 				if( ( e.source instanceof Reaction && ((Reaction)e.source).isReversible() ) || ( e.target instanceof Reaction && ((Reaction)e.target).isReversible() ) )

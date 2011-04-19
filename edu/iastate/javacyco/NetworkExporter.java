@@ -73,11 +73,11 @@ public class NetworkExporter {
 				}
 				if(format.equals("gml"))
 				{
-					net.writeGML(System.out,true,true,true,true,false,false);
+					net.writeGML(System.out,true,true,true,true,false,true);
 				}
 				else
 				{
-					net.writeXGMML(System.out,true,true,true,true,false,false);
+					net.writeXGMML(System.out,true,true,true,true,false,true);
 				}
 			}
 		}
