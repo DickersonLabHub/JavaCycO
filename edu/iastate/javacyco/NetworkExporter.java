@@ -21,7 +21,7 @@ public class NetworkExporter {
 	public static void main(String[] args) {
 		if(args.length<4)
 		{
-			System.out.println("Usage: GetGML SERVER PORT ORGANISM PATHWAY [gml|xgmml] [MAP_FILE [MAPPED_ATTRIBUTE_NAME]]");
+			System.out.println("Usage: NetworkExporter SERVER PORT ORGANISM PATHWAY [gml|xgmml] [MAP_FILE [MAPPED_ATTRIBUTE_NAME]]");
 			System.exit(0);
 		}
 		String server = args[0];
@@ -42,43 +42,27 @@ public class NetworkExporter {
 		connection.selectOrganism(org);
 		try
 		{
-			ArrayList<Frame> rst = connection.search(pathway, Pathway.GFPtype);
-			if(rst.size()==0)
+			Pathway pwy = (Pathway)Pathway.load(connection, pathway);
+			Network net = pwy.getNetwork();
+			if(mapFilename != null)
 			{
-				System.out.println("No hits");
-			}
-			else if(rst.size()>1)
-			{
-				System.out.println("Found multiple pathways:");
-				for(Frame f : rst)
+				BufferedReader mapFileReader = new BufferedReader(new FileReader(mapFilename));
+				String line = null;
+				HashMap<String,String> map = new HashMap<String,String>();
+				while((line=mapFileReader.readLine()) != null)
 				{
-					System.out.println("\t"+f.getLocalID()+"  "+f.getCommonName());
+					String[] lineParts = line.split("\t");
+					map.put(lineParts[0],lineParts[1]);
 				}
+				net.addMappedAttribute(mappedAttName, map);
+			}
+			if(format.equals("gml"))
+			{
+				net.writeGML(System.out,true,true,true,true,false,true);
 			}
 			else
 			{
-				Pathway pwy = (Pathway)(connection.search(pathway, Pathway.GFPtype).get(0));
-				Network net = pwy.getNetwork();
-				if(mapFilename != null)
-				{
-					BufferedReader mapFileReader = new BufferedReader(new FileReader(mapFilename));
-					String line = null;
-					HashMap<String,String> map = new HashMap<String,String>();
-					while((line=mapFileReader.readLine()) != null)
-					{
-						String[] lineParts = line.split("\t");
-						map.put(lineParts[0],lineParts[1]);
-					}
-					net.addMappedAttribute(mappedAttName, map);
-				}
-				if(format.equals("gml"))
-				{
-					net.writeGML(System.out,true,true,true,true,false,true);
-				}
-				else
-				{
-					net.writeXGMML(System.out,true,true,true,true,false,true);
-				}
+				net.writeXGMML(System.out,true,true,true,true,false,true);
 			}
 		}
 		catch(Exception ex)
