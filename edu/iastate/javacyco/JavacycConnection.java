@@ -759,7 +759,7 @@ public class JavacycConnection {
     
     public ArrayList oldAllOrgs()
     throws PtoolsErrorException {
-    	return callFuncArray("all-orgs");
+    	return callFuncArray("all-orgs",false);
     }
 
     /**
@@ -769,23 +769,27 @@ public class JavacycConnection {
     */
     public ArrayList<OrgStruct> allOrgs()
      throws PtoolsErrorException {
-    	try{this.callFuncArray("select-organism :org-id 'meta");}catch(Exception ex){System.out.println("Corrected socket sync");}
+    	try{this.callFuncArray("select-organism :org-id 'meta",false);}catch(Exception ex){System.out.println("Corrected socket sync");}
     	
     	ArrayList<OrgStruct> orgs = new ArrayList<OrgStruct>();
 
-		ArrayList al = callFuncArray("all-orgs");
-    	OrgStruct org;
-		for(Object obj : al)
-		{
-			if(obj instanceof ArrayList)
-			{
-				//System.out.println(((ArrayList)obj).size());
-				org = JavacycConnection.arrayListToOrgStruct((ArrayList)(obj));
-				orgs.add(org);
-			}
-		}
-    	
-		return orgs;
+	ArrayList al = callFuncArray("mapcar #'kb-orgid (all-orgs nil)",false);
+	for(Object obj : al)
+	{
+		//System.out.println(obj);
+		OrgStruct org = new OrgStruct();
+		org.put(":ORGANISM", (String)obj);
+		org.put(":SPECIES-NAME", (String)obj);
+		orgs.add(org);
+//		if(obj instanceof ArrayList)
+//		{
+//			OrgStruct org = new OrgStruct();
+//			org = JavacycConnection.arrayListToOrgStruct((ArrayList)(obj));
+//			orgs.add(org);
+//		}
+	}
+
+	return orgs;
     }
     
     /**
@@ -1464,7 +1468,7 @@ public class JavacycConnection {
     private ArrayList callFuncArray(String func,boolean wrap) throws PtoolsErrorException
     {
 		makeSocket();
-		String query = wrap ? wrapQuery(func) : func;
+		String query = wrap ? wrapQuery(func) : "("+func+")";
 		ArrayList results = null;
 		try
 		{

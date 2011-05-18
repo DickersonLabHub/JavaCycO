@@ -147,7 +147,7 @@ public class Network
 
 	public static String removeHTML(String s)
 	{
-		return s.replace("<I>","").replace("</I>","").replace("<SUB>","").replace("</SUB>","").replace("<SUP>","").replace("</SUP>","").replace("<B>","").replace("</B>","").replace("<i>","").replace("</i>","").replace("<sub>","").replace("</sub>","").replace("<sup>","").replace("</sup>","").replace("<b>","").replace("</b>","").replace("&Aring","").replace("&Aring","").replace("&Aring","A").replace("&alpha","a").replace("&beta","B").replace("&epsilon","e").replace("&sigma","s").replace("&gamma","y").replace("&delta","d");
+		return s.replace("<I>","").replace("</I>","").replace("<SUB>","").replace("</SUB>","").replace("<SUP>","").replace("</SUP>","").replace("<B>","").replace("</B>","").replace("<i>","").replace("</i>","").replace("<sub>","").replace("</sub>","").replace("<sup>","").replace("</sup>","").replace("<b>","").replace("</b>","").replace("&Aring","").replace("&Aring","").replace("&Aring","A").replace("&alpha","a").replace("&omega","w").replace("&beta","B").replace("&epsilon","e").replace("&sigma","s").replace("&gamma","y").replace("&delta","d").replace("&Delta","d").replace("<","\\<").replace(">","\\>");
 	}
 	
 	/**
@@ -182,7 +182,7 @@ public class Network
 	 */
 	public void writeGML(PrintStream w,boolean rich,boolean weights,boolean directed,boolean GMLlists,boolean stats,boolean pathways)
 	throws PtoolsErrorException {
-		System.out.println("Writing "+name+" [rich,weights,directed] = "+rich+","+weights+","+directed);
+		//System.out.println("Writing "+name+" [rich,weights,directed] = "+rich+","+weights+","+directed);
 		HashMap<String,ArrayList<String>> pathwayMembership = new HashMap<String,ArrayList<String>>();
 		HashMap<String,Integer> reactionDirections = new HashMap<String,Integer>();
 		w.println("Creator \"JavaCycO\"");
@@ -234,7 +234,7 @@ public class Network
 	 */
 	public void writeXGMML(PrintStream w,boolean rich,boolean weights,boolean directed,boolean GMLlists,boolean stats,boolean pathways)
 	throws PtoolsErrorException {
-		System.out.println("Writing "+name+" [rich,weights,directed] = "+rich+","+weights+","+directed);
+		//System.out.println("Writing "+name+" [rich,weights,directed] = "+rich+","+weights+","+directed);
 		HashMap<String,ArrayList<String>> pathwayMembership = new HashMap<String,ArrayList<String>>();
 		HashMap<String,Integer> reactionDirections = new HashMap<String,Integer>();
 		w.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"+
@@ -840,11 +840,11 @@ public class Network
 				}
 				for(String att : this.attributes.keySet())
 				{
-					ret += "\t<att type=\"string\" name=\""+att+"\" value=\"" + this.attributes.get(att) + "\"/>\n";
+					ret += "\t<att type=\"string\" name=\""+att+"\" value=\"" + removeHTML(this.attributes.get(att)) + "\"/>\n";
 				}
 			}
 			ret += "</edge>\n";
-			return removeHTML(ret);
+			return (ret);
 		}
 	}
 }

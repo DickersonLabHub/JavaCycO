@@ -914,17 +914,17 @@ public class Frame
 //    <graphics type="ELLIPSE" h="40.0" w="40.0" x="0.0" y="201.0" fill="#ff9999" width="1" outline="#666666" cy:nodeTransparency="1.0" cy:nodeLabelFont="SansSerif.bold-0-12" cy:borderLineType="solid"/>
 //  </node>
 
-	    String ret = "<node label=\""+this.getCommonName()+"\" id=\""+GMLids.get(getLocalID())+"\">\n";
+	    String ret = "<node label=\""+Network.removeHTML(this.getCommonName())+"\" id=\""+GMLids.get(getLocalID())+"\">\n";
 	    ret += "\t<att type=\"string\" name=\"canonicalName\" value=\""+getLocalID()+"\"/>\n";
-	    ret += "\t<att type=\"string\" name=\"label\" value=\""+this.getCommonName()+"\"/>\n";
+	    ret += "\t<att type=\"string\" name=\"label\" value=\""+Network.removeHTML(this.getCommonName())+"\"/>\n";
 	    ret += "\t<att type=\"string\" name=\"class\" value=\""+this.getGFPtype()+"\"/>\n";
 	    if(rich)
 	    {
 		for(String slot : getSlots().keySet())
 		{
 			ArrayList val = getSlotValues(slot);
-			if(val.size()==0) continue;
-			ret += "\t<att type=\"string\" name=\""+slot+"\" value=\""+Network.ArrayList2textList(val).replace("\"","\\\"")+"\"/>\n";
+			if(val.size()==0 || slot.equals("COMMENT")) continue;
+			ret += "\t<att type=\"string\" name=\""+slot+"\" value=\""+Network.removeHTML(Network.ArrayList2textList(val).replace("\"","\\\""))+"\"/>\n";
 		}
 		String type = this.getCytoscapeShape();
 		String fill = String.format("%06X",Integer.parseInt(this.getColor(),16));
@@ -934,7 +934,7 @@ public class Frame
 			HashSet<String> pwys = new HashSet<String>();
 			for(Frame pwy : getPathways())
 			{
-				pwys.add(pwy.getLocalID()+"--"+pwy.getCommonName());
+				pwys.add(pwy.getLocalID()+"--"+Network.removeHTML(pwy.getCommonName()));
 			}
 			ret += "\t<att type=\"string\" name=\"pathway\" value=\""+Network.ArrayList2textList(new ArrayList<String>(pwys))+"\"/>\n";
 		}
@@ -949,7 +949,7 @@ public class Frame
 		}
 	    }
 	    ret += "</node>\n";
-	    return Network.removeHTML(ret);
+	    return ret;
 	}
 
 
