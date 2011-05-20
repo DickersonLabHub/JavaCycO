@@ -267,8 +267,9 @@ public class Network
 			{
 				if( ( e.source instanceof Reaction && ((Reaction)e.source).isReversible() ) || ( e.target instanceof Reaction && ((Reaction)e.target).isReversible() ) )
 				{
-					Edge ed = n.addEdge(e.target,e.source,"");
-					w.print(ed.getXGMML(rich, GMLlists, pathways, nodeAtts, GMLids));
+					e.isReversible = true;
+//					Edge ed = n.addEdge(e.target,e.source,"");
+//					w.print(ed.getXGMML(rich, GMLlists, pathways, nodeAtts, GMLids));
 				}
 			}
 		}
@@ -695,7 +696,7 @@ public class Network
 		public ArrayList<String> pathways = new ArrayList<String>();
 		public HashMap<String,String> attributes;
 		public String[] defaultAttLabels = {"type","stoichiometry","compartment"};
-		
+		public boolean isReversible;
 		
 		public Edge(Frame f,Frame t,String e)
 		{
@@ -703,6 +704,7 @@ public class Network
 			target = t;
 			info = e;
 			attributes = new HashMap<String,String>();
+			isReversible = false;
 			int i=0;
 			for(String val : e.split("\t"))
 			{
@@ -820,13 +822,14 @@ public class Network
 			ret += "\t<att type=\"string\" name=\"canonicalName\" value=\""+this.attributes.get("type")+"\"/>\n";
 			ret += "\t<att type=\"string\" name=\"interaction\" value=\"pp\" cy:editable=\"false\"/>\n";
 			String targetArrow = "3";
+			String sourceArrow = isReversible ? "3" : "0";
 			String color = "#000000";
 			if(this.attributes.containsKey("type") && this.attributes.get("type").toLowerCase().contains("inhibit"))
 			{
 				targetArrow = "15";
 				color = "#FF0000";
 			}
-			ret += "<graphics width=\"1\" fill=\"#000000\" cy:sourceArrow=\"0\" cy:targetArrow=\""+targetArrow+"\" cy:sourceArrowColor=\""+color+"\" cy:targetArrowColor=\""+color+"\" cy:edgeLabelFont=\"SanSerif-0-10\" cy:edgeLineType=\"SOLID\" cy:curved=\"STRAIGHT_LINES\"></graphics>\n";
+			ret += "<graphics width=\"1\" fill=\"#000000\" cy:sourceArrow=\""+sourceArrow+"\" cy:targetArrow=\""+targetArrow+"\" cy:sourceArrowColor=\""+color+"\" cy:targetArrowColor=\""+color+"\" cy:edgeLabelFont=\"SanSerif-0-10\" cy:edgeLineType=\"SOLID\" cy:curved=\"STRAIGHT_LINES\"></graphics>\n";
 			HashSet<String> pwys = new HashSet<String>();
 			if(rich)
 			{
