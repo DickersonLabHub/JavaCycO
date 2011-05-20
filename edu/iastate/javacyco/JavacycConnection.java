@@ -778,7 +778,7 @@ public class JavacycConnection {
 	{
 		OrgStruct org = new OrgStruct();
 		org.put(":ORGANISM", orgID);
-		String orgName = this.callFuncString("(org-name :org '"+orgID+")");
+		String orgName = this.callFuncString("org-name :org '"+orgID,false);
 		org.put(":SPECIES-NAME", orgName);
 		orgs.add(org);
 	}
@@ -1485,7 +1485,10 @@ public class JavacycConnection {
 		return results;
     }
     
-
+    private String callFuncString(String func) throws PtoolsErrorException
+    {
+	    return callFuncString(func,true);
+    }
 
     /**
        Private method to call a Pathway Tools function that returns a string.
@@ -1495,12 +1498,11 @@ public class JavacycConnection {
        See the PathwayTools terminal windows for details when this happens.
        The PtoolsErrorException will contain a message giving the query that caused the error.
     */
-    private String callFuncString(String func) throws PtoolsErrorException
+    private String callFuncString(String func, boolean wrap) throws PtoolsErrorException
     {
 		makeSocket();
 		String results = "";
-		String query = "(with-organism (:org-id '" + organism +
-		") (object-name (" + func + ")))";
+		String query = wrap ? wrapQuery(func) : "("+func+")";
 		try {
 		    Long start = System.currentTimeMillis();
 		    sendQuery(query);
