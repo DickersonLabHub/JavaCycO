@@ -773,20 +773,14 @@ public class JavacycConnection {
     	
     	ArrayList<OrgStruct> orgs = new ArrayList<OrgStruct>();
 
-	ArrayList al = callFuncArray("mapcar #'kb-orgid (all-orgs nil)",false);
-	for(Object obj : al)
+	ArrayList<String> orgIDs = callFuncArray("mapcar #'kb-orgid (all-orgs nil)",false);
+	for(String orgID : orgIDs)
 	{
-		//System.out.println(obj);
 		OrgStruct org = new OrgStruct();
-		org.put(":ORGANISM", (String)obj);
-		org.put(":SPECIES-NAME", (String)obj);
+		org.put(":ORGANISM", orgID);
+		String orgName = this.callFuncString("(org-name :org '"+orgID+")");
+		org.put(":SPECIES-NAME", orgName);
 		orgs.add(org);
-//		if(obj instanceof ArrayList)
-//		{
-//			OrgStruct org = new OrgStruct();
-//			org = JavacycConnection.arrayListToOrgStruct((ArrayList)(obj));
-//			orgs.add(org);
-//		}
 	}
 
 	return orgs;
