@@ -238,7 +238,7 @@ public class Network
 		HashMap<String,ArrayList<String>> pathwayMembership = new HashMap<String,ArrayList<String>>();
 		HashMap<String,Integer> reactionDirections = new HashMap<String,Integer>();
 		w.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"+
-"<graph label=\"system1\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:cy=\"http://www.cytoscape.org\" xmlns=\"http://www.cs.rpi.edu/XGMML\"  directed=\"1\">\n"+
+"<graph label=\""+this.name+"\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:cy=\"http://www.cytoscape.org\" xmlns=\"http://www.cs.rpi.edu/XGMML\"  directed=\"1\">\n"+
 "  <att name=\"documentVersion\" value=\"1.1\"/>\n"+
 "  <att name=\"networkMetadata\">\n"+
 "    <rdf:RDF>\n"+

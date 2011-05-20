@@ -1490,6 +1490,12 @@ public class JavacycConnection {
 	    return callFuncString(func,true);
     }
 
+    private String wrapStringQuery(String func)
+    {
+	   return  "(with-organism (:org-id '" + organism + ") (object-name (" + func + ")))";
+
+    }
+
     /**
        Private method to call a Pathway Tools function that returns a string.
        @param func the Pathway Tools function to call
@@ -1502,7 +1508,7 @@ public class JavacycConnection {
     {
 		makeSocket();
 		String results = "";
-		String query = wrap ? wrapQuery(func) : "("+func+")";
+		String query = wrap ? wrapStringQuery(func) : "("+func+")";
 		try {
 		    Long start = System.currentTimeMillis();
 		    sendQuery(query);
