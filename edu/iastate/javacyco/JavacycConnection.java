@@ -1462,7 +1462,20 @@ public class JavacycConnection {
     private ArrayList callFuncArray(String func,boolean wrap) throws PtoolsErrorException
     {
 		makeSocket();
-		String query = wrap ? wrapQuery(func) : "("+func+")";
+		String query = "";
+		if(wrap)
+		{
+			query = wrapQuery(func);
+		}
+		else if(func.startsWith("***"))
+		{
+			 query = "("+func+")";
+		}
+		else
+		{
+			query = func;
+		}
+
 		ArrayList results = null;
 		try
 		{
@@ -1561,6 +1574,11 @@ public class JavacycConnection {
     private void sendQuery(String query)
     {
     	//System.out.println("javacyc sending query: "+query);
+	if(query==null)
+	{
+		Exception ex = new Exception("Null query");
+		ex.printStackTrace();
+	}
     	out.println(query.replace(";","\\;"));
     		
     }
