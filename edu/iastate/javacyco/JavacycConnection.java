@@ -1469,11 +1469,11 @@ public class JavacycConnection {
 		}
 		else if(func.startsWith("***"))
 		{
-			 query = "("+func+")";
+			query = func;
 		}
 		else
 		{
-			query = func;
+			query = "("+func+")";
 		}
 
 		ArrayList results = null;
@@ -1579,7 +1579,8 @@ public class JavacycConnection {
 		Exception ex = new Exception("Null query");
 		ex.printStackTrace();
 	}
-    	out.println(query.replace(";","\\;"));
+	else
+		out.println(query.replace(";", "\\;"));
     		
     }
 
