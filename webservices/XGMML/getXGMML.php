@@ -20,6 +20,7 @@ else
 	}
 	header ("Content-Type: text/xml");
 	header("Content-Disposition: attachment; filename=$filename");
+	include($filename);
 }
 ?>
 
