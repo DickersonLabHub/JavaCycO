@@ -15,7 +15,7 @@
 <p></p>
 <h2>Some examples:</h2>
 <ul>
-	<li><a href="/XGMML/getXGMML.php?org=ECOLI&pathway=CALVIN-PWY">The EcoCyc pathway "calvin cycle"</a>
+	<li><a href="/XGMML/getXGMML.php?org=ECOLI&pathway=GLYCOLYSIS">The EcoCyc glycolyis pathway</a>
 
 	<li><a href="/XGMML/getXGMML.php?org=ARA&pathway=PWY-2541">The AraCyc pathway "plant sterol biosynthesis"</a>
 </ul>
