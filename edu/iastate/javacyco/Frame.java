@@ -82,6 +82,11 @@ public class Frame
 	frame. This is done to prevent the need for repeated calls to getPathways(), which tends to be very computationally expensive.  
 	*/
 	public ArrayList<Frame> pathways = new ArrayList<Frame>();
+
+	/**
+
+	*/
+	protected String organismID;
 	
 	/**
 	Create a new, empty Frame.
@@ -96,6 +101,17 @@ public class Frame
 		slots = new HashMap<String,ArrayList>();
 		annotations = new HashMap<String,String>();
 		slotValueAnnotations = new HashMap<String,HashMap<String,HashMap<String,ArrayList>>>();
+		organismID = c.getOrganismID();
+	}
+
+	public String getOrganismID()
+	{
+		return organismID;
+	}
+
+	public OrgStruct getOrganism() throws PtoolsErrorException 
+	{
+		return OrgStruct.load(conn, organismID);
 	}
 	
 	/**
@@ -186,6 +202,7 @@ public class Frame
 	throws PtoolsErrorException {
 		conn.showMe(ID);
 		System.out.println("~CLASSIFIED AS\n\t"+this.getClass().getName());
+		System.out.println("~LOADED FROM\n\t"+this.getOrganism().getLocalID()+" "+this.getOrganism().getSpecies());
 	}
 	
 	/**

@@ -776,11 +776,7 @@ public class JavacycConnection {
 	ArrayList<String> orgIDs = callFuncArray("mapcar #'kb-orgid (all-orgs nil)",false);
 	for(String orgID : orgIDs)
 	{
-		OrgStruct org = new OrgStruct();
-		org.put(":ORGANISM", orgID);
-		String orgName = this.callFuncString("org-name :org '"+orgID,false);
-		org.put(":SPECIES-NAME", orgName);
-		orgs.add(org);
+		orgs.add(OrgStruct.load(this, orgID));
 	}
 
 	return orgs;
@@ -1517,7 +1513,7 @@ public class JavacycConnection {
        See the PathwayTools terminal windows for details when this happens.
        The PtoolsErrorException will contain a message giving the query that caused the error.
     */
-    private String callFuncString(String func, boolean wrap) throws PtoolsErrorException
+    public String callFuncString(String func, boolean wrap) throws PtoolsErrorException
     {
 		makeSocket();
 		String results = "";

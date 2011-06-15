@@ -27,6 +27,15 @@ public class OrgStruct extends HashMap<String,String>
 	{
 
 	}
+
+	static OrgStruct load(JavacycConnection c, String orgID)
+	throws PtoolsErrorException {
+		OrgStruct org = new OrgStruct();
+		org.put(":ORGANISM", orgID);
+		String orgName = c.callFuncString("org-name :org '"+orgID,false);
+		org.put(":SPECIES-NAME", orgName);
+		return org;
+	}
 	
 	public String getSpecies()
 	{
