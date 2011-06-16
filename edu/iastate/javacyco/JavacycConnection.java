@@ -2589,15 +2589,19 @@ public class JavacycConnection {
 		{
 			rst = (ArrayList<String>)this.callFuncArray("***SEARCH:"+search+","+type+","+this.organism,false);
 		}
-		if(rst.size()>0)
+		if(isCaching() && rst.size()>0)
 			searchCache.put(search, rst);
 		return Frame.load(this,rst);
 	}
 	
 	private void addToSearchCache(String name,String frameId)
 	{
-		if(!searchCache.containsKey(name.toUpperCase())) searchCache.put(name.toUpperCase(), new ArrayList<String>());
-		searchCache.get(name.toUpperCase()).add(frameId);
+		if(isCaching())
+		{
+			if(!searchCache.containsKey(name.toUpperCase()))
+				searchCache.put(name.toUpperCase(), new ArrayList<String>());
+			searchCache.get(name.toUpperCase()).add(frameId);
+		}
 	}
 	
     /**
