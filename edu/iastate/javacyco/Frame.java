@@ -933,7 +933,7 @@ public class Frame
 //  </node>
 
 	    String ret = "<node label=\""+Network.removeHTML(this.getCommonName())+"\" id=\""+GMLids.get(getLocalID())+"\">\n";
-	    ret += "\t<att type=\"string\" name=\"canonicalName\" value=\""+getLocalID()+"\"/>\n";
+	    ret += "\t<att type=\"string\" name=\"canonicalName\" value=\""+getCommonName()+"\"/>\n";
 	    ret += "\t<att type=\"string\" name=\"label\" value=\""+Network.removeHTML(this.getCommonName())+"\"/>\n";
 	    ret += "\t<att type=\"string\" name=\"class\" value=\""+this.getGFPtype()+"\"/>\n";
 	    if(rich)
