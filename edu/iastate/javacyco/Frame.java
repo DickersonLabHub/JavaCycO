@@ -553,17 +553,18 @@ public class Frame
 	throws PtoolsErrorException {
 		if (id == null || id.length() == 0) return null;
 		if(id.startsWith("(")) id = id.replace("(","").replace(")","").replace(" ","");
-		if(c.isCaching() && c.cache.containsKey(id))
+		String key = c.getOrganismID()+":"+id;
+		if(c.isCaching() && c.cache.containsKey(key))
 		{
 			c.incrementCacheHits();
-			return c.cache.get(id);
+			return c.cache.get(key);
 		}
 		else
 		{
 			Frame f = Frame.classifyFrame(c,id);
 			if(c.isCaching())
 			{
-				c.cache.put(id,f);
+				c.cache.put(key,f);
 			}
 			return f;
 		}

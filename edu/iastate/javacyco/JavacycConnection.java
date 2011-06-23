@@ -2462,6 +2462,11 @@ public class JavacycConnection {
 	 */
 	public LinkedHashMap<String,String> getPathwayOntology(boolean here) throws PtoolsErrorException
 	{
+		return this.getPathwayOntology(here, "+");
+	}
+
+	public LinkedHashMap<String,String> getPathwayOntology(boolean here, String tab) throws PtoolsErrorException
+	{
 		if(this.pathwayOntologyCache.size()>0) return this.pathwayOntologyCache;
 		LinkedHashMap<String,String> classMap = new LinkedHashMap<String,String>();
 		if(!here)
@@ -2476,13 +2481,13 @@ public class JavacycConnection {
 		}
 		else
 		{
-			putChildren((OntologyTerm)Frame.load(this,Pathway.GFPtype),classMap,"");
+			putChildren((OntologyTerm)Frame.load(this,Pathway.GFPtype),classMap,"",tab);
 		}
 		this.pathwayOntologyCache = classMap;
 		return classMap;
 	}
 	
-	private void putChildren(OntologyTerm ont,LinkedHashMap<String,String> classMap,String tabs) throws PtoolsErrorException
+	private void putChildren(OntologyTerm ont,LinkedHashMap<String,String> classMap,String tabs,String tab) throws PtoolsErrorException
 	{
 		ArrayList<OntologyTerm> children = ont.getChildren();
 		if(children.size()>0)
@@ -2493,7 +2498,7 @@ public class JavacycConnection {
 				sortMap.put(child.getCommonName(),child);
 			for(String name : sortMap.keySet())
 			{
-				putChildren(sortMap.get(name),classMap,tabs+"+");
+				putChildren(sortMap.get(name),classMap,tabs+tab,tab);
 			}
 		}
 	}
@@ -2526,11 +2531,11 @@ public class JavacycConnection {
 		if(search==null || search.length()==0) return new ArrayList<Frame>();
 		search = search.toUpperCase();
 		ArrayList<String> rst = new ArrayList<String>();
-
-		if(searchCache.containsKey(search))
+		String key = this.getOrganismID()+":"+type+":"+search;
+		if(searchCache.containsKey(key))
 		{
 			//System.out.println(searchCache.get(search).size()+" cached / "+searchCache.size());
-			return Frame.load(this,searchCache.get(search));
+			return Frame.load(this,searchCache.get(key));
 		}
 		else if(here)
 		{
@@ -2541,21 +2546,21 @@ public class JavacycConnection {
 				if(id.toUpperCase().contains(search)) 
 				{
 					rst.add(id);
-					addToSearchCache(id,id);
+					addToSearchCache(type,id,id);
 					continue;
 				}
 				String cn = this.getSlotValue(id,"COMMON-NAME");
 				if(cn.toUpperCase().contains(search)) 
 				{
 					rst.add(id);
-					addToSearchCache(cn,id);
+					addToSearchCache(type,cn,id);
 					continue;
 				}
 				boolean hit = false;
 				for(Object nameObj : this.getSlotValues(id,"NAMES"))
 				{
 					String name = (String)nameObj;
-					addToSearchCache(name,id);
+					addToSearchCache(type,name,id);
 					if(name.toUpperCase().contains(search)) 
 					{
 						hit = true;
@@ -2570,7 +2575,7 @@ public class JavacycConnection {
 				for(Object synObj : this.getSlotValues(id,"SYNONYMS"))
 				{
 					String syn = (String)synObj;
-					addToSearchCache(syn,id);
+					addToSearchCache(type,syn,id);
 					if(syn.toUpperCase().contains(search)) 
 					{
 						hit = true;
@@ -2590,17 +2595,18 @@ public class JavacycConnection {
 			rst = (ArrayList<String>)this.callFuncArray("***SEARCH:"+search+","+type+","+this.organism,false);
 		}
 		if(isCaching() && rst.size()>0)
-			searchCache.put(search, rst);
+			searchCache.put(key, rst);
 		return Frame.load(this,rst);
 	}
 	
-	private void addToSearchCache(String name,String frameId)
+	private void addToSearchCache(String type,String name,String frameId)
 	{
 		if(isCaching())
 		{
-			if(!searchCache.containsKey(name.toUpperCase()))
-				searchCache.put(name.toUpperCase(), new ArrayList<String>());
-			searchCache.get(name.toUpperCase()).add(frameId);
+			String key = this.getOrganismID()+":"+type+":"+name;
+			if(!searchCache.containsKey(key.toUpperCase()))
+				searchCache.put(key.toUpperCase(), new ArrayList<String>());
+			searchCache.get(key.toUpperCase()).add(frameId);
 		}
 	}
 	
