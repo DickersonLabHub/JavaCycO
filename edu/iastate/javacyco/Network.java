@@ -147,7 +147,7 @@ public class Network
 
 	public static String removeHTML(String s)
 	{
-		return s.replace("<I>","").replace("</I>","").replace("<SUB>","").replace("</SUB>","").replace("<SUP>","").replace("</SUP>","").replace("<B>","").replace("</B>","").replace("<i>","").replace("</i>","").replace("<sub>","").replace("</sub>","").replace("<sup>","").replace("</sup>","").replace("<b>","").replace("</b>","").replace("&Aring","").replace("&Aring","").replace("&Aring","A").replace("&alpha","a").replace("&omega","w").replace("&beta","B").replace("&epsilon","e").replace("&sigma","s").replace("&gamma","y").replace("&delta","d").replace("&Delta","d").replace("<","\\<").replace(">","\\>");
+		return s.replace("<I>","").replace("</I>","").replace("<SUB>","").replace("</SUB>","").replace("<SUP>","").replace("</SUP>","").replace("<B>","").replace("</B>","").replace("<i>","").replace("</i>","").replace("<sub>","").replace("</sub>","").replace("<sup>","").replace("</sup>","").replace("<b>","").replace("</b>","").replace("&Aring","").replace("&Aring","").replace("&Aring","A").replace("&alpha","a").replace("&omega","w").replace("&beta","B").replace("&epsilon","e").replace("&sigma","s").replace("&gamma","y").replace("&delta","d").replace("&Delta","d").replace("<","").replace(">","").replace("/","");
 	}
 	
 	/**
