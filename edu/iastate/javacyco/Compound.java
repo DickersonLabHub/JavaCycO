@@ -103,37 +103,42 @@ public class Compound extends Frame
 	*/
 	public ArrayList<Frame> getPathways()
 	throws PtoolsErrorException {
-		ArrayList<Frame> pways = new ArrayList<Frame>();
-		
-		//Get the pathways where this compound is in a reaction as a reactant
-		for (Reaction r : this.reactantIn()) {
-			for (Frame pway : r.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-		}
-		
-		//Get the pathways where this compound is in a reaction as a product
-		for (Reaction r : this.productOf()) {
-			for (Frame pway : r.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-		}
-		
-		//Get the pathways where this compound is in a reaction as a cofactor
-		for (Frame enzyme : this.cofactorOf()) {
-			for (Frame pway : enzyme.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-		}
-		
-		//Get the pathways where this compound is in a reaction as a prosthetic group
-		for (Frame enzyme : this.prostheticGroupOf()) {
-			for (Frame pway : enzyme.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-		}
-		
-		ArrayList<Frame> allPways = new ArrayList<Frame>();
-		allPways.addAll(pways);
-		for (Frame pway : pways) {
-			for (Frame superPway : Pathway.load(conn,pway.getSlotValues("Super-Pathways"))) {
-				allPways.add(superPway);
+
+		if(pathways==null || pathways.size()==0)
+		{
+			ArrayList<Frame> pways = new ArrayList<Frame>();
+
+			//Get the pathways where this compound is in a reaction as a reactant
+			for (Reaction r : this.reactantIn()) {
+				for (Frame pway : r.getPathways()) if (!pways.contains(pway)) pways.add(pway);
 			}
+
+			//Get the pathways where this compound is in a reaction as a product
+			for (Reaction r : this.productOf()) {
+				for (Frame pway : r.getPathways()) if (!pways.contains(pway)) pways.add(pway);
+			}
+
+			//Get the pathways where this compound is in a reaction as a cofactor
+			for (Frame enzyme : this.cofactorOf()) {
+				for (Frame pway : enzyme.getPathways()) if (!pways.contains(pway)) pways.add(pway);
+			}
+
+			//Get the pathways where this compound is in a reaction as a prosthetic group
+			for (Frame enzyme : this.prostheticGroupOf()) {
+				for (Frame pway : enzyme.getPathways()) if (!pways.contains(pway)) pways.add(pway);
+			}
+
+			ArrayList<Frame> allPways = new ArrayList<Frame>();
+			allPways.addAll(pways);
+			for (Frame pway : pways) {
+				for (Frame superPway : Pathway.load(conn,pway.getSlotValues("Super-Pathways"))) {
+					allPways.add(superPway);
+				}
+			}
+			pathways = pways;
 		}
 		
-		pathways = pways;
+		
 		return pathways;
 	}
 	
