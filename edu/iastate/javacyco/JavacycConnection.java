@@ -743,7 +743,6 @@ public class JavacycConnection {
     public void selectOrganism(String newOrganism)
     {
     	organism = newOrganism;
-    	searchCache.clear();
     	pathwayOntologyCache.clear();
     }
 
