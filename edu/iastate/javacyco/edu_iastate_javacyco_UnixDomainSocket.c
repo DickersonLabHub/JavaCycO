@@ -22,7 +22,7 @@
 #include <strings.h>
 
 
-JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeOpen(JNIEnv *jEnv, jclass jClass, jstring jSocketFile)
+JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_UnixDomainSocket_nativeOpen(JNIEnv *jEnv, jclass jClass, jstring jSocketFile)
 {
 	struct sockaddr_un serverAddress;
 	int serverAddressLength;
@@ -63,7 +63,7 @@ JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeOpen
 	return socketFileHandle;
 }
 
-JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeRead(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
+JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_UnixDomainSocket_nativeRead(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
 {
         /* Create the char buffer */
 	char buffer[1];
@@ -87,7 +87,7 @@ JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeRead
 
 }
 
-JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeWrite(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle, jint jData)
+JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_UnixDomainSocket_nativeWrite(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle, jint jData)
 {
         /* Create the char buffer and put the data in it */
         /*char buffer[] = {jData}; */
@@ -102,19 +102,19 @@ JNIEXPORT jint JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeWrit
 	return result;
 }
 
-JNIEXPORT void JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeClose(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
+JNIEXPORT void JNICALL Java_edu_iastate_javacyco_UnixDomainSocket_nativeClose(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
 {
         /* Close the socket */
 	close(jSocketFileHandle);
 }
 
-JNIEXPORT void JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeCloseInput(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
+JNIEXPORT void JNICALL Java_edu_iastate_javacyco_UnixDomainSocket_nativeCloseInput(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
 {
         /* Close the socket input stream */
 	shutdown(jSocketFileHandle, SHUT_RD);
 }
 
-JNIEXPORT void JNICALL Java_edu_iastate_javacyco_edu_iastate_javacyco_nativeCloseOutput(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
+JNIEXPORT void JNICALL Java_edu_iastate_javacyco_UnixDomainSocket_nativeCloseOutput(JNIEnv *jEnv, jclass jClass, jint jSocketFileHandle)
 {
         /* Close the socket output stream */
 	shutdown(jSocketFileHandle, SHUT_WR);
