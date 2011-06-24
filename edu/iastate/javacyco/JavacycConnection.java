@@ -2539,16 +2539,17 @@ public class JavacycConnection {
 		else if(here)
 		{
 			ArrayList ids = this.getClassAllInstances(type);
-			for(Object obj : ids)
+			ArrayList<Frame> frames = Frame.load(this,ids);
+			for(Frame f : frames)
 			{
-				String id = (String)obj;
+				String id = f.getLocalID();
 				if(id.toUpperCase().contains(search)) 
 				{
 					rst.add(id);
 					addToSearchCache(type,id,id);
 					continue;
 				}
-				String cn = this.getSlotValue(id,"COMMON-NAME");
+				String cn = Network.removeHTML(f.getCommonName());
 				if(cn.toUpperCase().contains(search)) 
 				{
 					rst.add(id);
@@ -2556,9 +2557,9 @@ public class JavacycConnection {
 					continue;
 				}
 				boolean hit = false;
-				for(Object nameObj : this.getSlotValues(id,"NAMES"))
+				for(Object nameObj : f.getSlotValues("NAMES"))
 				{
-					String name = (String)nameObj;
+					String name = Network.removeHTML((String)nameObj);
 					addToSearchCache(type,name,id);
 					if(name.toUpperCase().contains(search)) 
 					{
@@ -2571,9 +2572,9 @@ public class JavacycConnection {
 					rst.add(id);
 					continue;
 				}
-				for(Object synObj : this.getSlotValues(id,"SYNONYMS"))
+				for(Object synObj : f.getSlotValues("SYNONYMS"))
 				{
-					String syn = (String)synObj;
+					String syn = Network.removeHTML((String)synObj);
 					addToSearchCache(type,syn,id);
 					if(syn.toUpperCase().contains(search)) 
 					{
