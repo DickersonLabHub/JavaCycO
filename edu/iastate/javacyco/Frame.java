@@ -612,81 +612,90 @@ public class Frame
 	public static Frame classifyFrame(JavacycConnection c,String id)
 	throws PtoolsErrorException {	
 		if(id==null) return null;
-		
-		if(!c.frameExists(id))
-		{
-			//throw new PtoolsErrorException("Frame "+id+" not in KB!");
-			System.err.println("Frame "+id+" not in KB!");
-			return new Frame(c,id);
-		}
 
-		
-		HashSet<String> classes = new HashSet<String>(c.getInstanceAllTypes(id));
-		
-		if(c.getFrameType(id).equals(":CLASS"))
+		try
 		{
-			if(classes.contains(GOTerm.GFPtype))
+
+			HashSet<String> classes = new HashSet<String>(c.getInstanceAllTypes(id));
+
+			if(c.getFrameType(id).equals(":CLASS"))
 			{
-				if(classes.contains(GOCellularComponent.GFPtype))
-					return new GOCellularComponent(c,id);
-				if(classes.contains(GOBiologicalProcess.GFPtype))
-					return new GOBiologicalProcess(c,id);
-				if(classes.contains(GOMolecularFunction.GFPtype))
-					return new GOMolecularFunction(c,id);
-				return new GOTerm(c,id);
+				if(classes.contains(GOTerm.GFPtype))
+				{
+					if(classes.contains(GOCellularComponent.GFPtype))
+						return new GOCellularComponent(c,id);
+					if(classes.contains(GOBiologicalProcess.GFPtype))
+						return new GOBiologicalProcess(c,id);
+					if(classes.contains(GOMolecularFunction.GFPtype))
+						return new GOMolecularFunction(c,id);
+					return new GOTerm(c,id);
+				}
+				else if(classes.contains(CellComponent.GFPtype))
+					return new CellComponent(c,id);
+				else
+					return new OntologyTerm(c,id);
 			}
-			else if(classes.contains(CellComponent.GFPtype))
-				return new CellComponent(c,id);
-			else
-				return new OntologyTerm(c,id);
-		}
-		else if(classes.contains("|Polypeptides|"))
-			return new Monomer(c,id);
-		else if(classes.contains("|Protein-Complexes|") || classes.contains("|Protein-Small-Molecule-Complexes|"))
-			return new Complex(c,id);
-		else if(classes.contains("|Proteins|"))
-			return new Monomer(c,id);
-		else if(classes.contains("|Transcription-Units|"))
-			return new TranscriptionUnit(c,id);
-		else if(classes.contains("|Enzymatic-Reactions|"))
-			return new Catalysis(c,id);
-		else if(classes.contains("|Promoters|"))
-			return new Promoter(c,id);
-		else if(classes.contains("|Chromosomes|"))
-			return new Chromosome(c,id);
-		else if(classes.contains("|All-Genes|") || classes.contains("|Polynucleotides|"))
-			return new Gene(c,id);
-		else if(classes.contains("|DNA-Reactions|"))
-			return new DNAReaction(c,id);
-		else if(classes.contains("|Transport-Reactions|"))
-			return new TransportReaction(c,id);
-		else if(classes.contains("|Small-Molecule-Reactions|"))
-			return new SmallMoleculeReaction(c,id);
-		else if(classes.contains("|Reactions|"))
-		{
-			if(!c.slotIsNil(id,"ENZYMATIC-REACTION"))
-				return new EnzymeReaction(c,id);
+			else if(classes.contains("|Polypeptides|"))
+				return new Monomer(c,id);
+			else if(classes.contains("|Protein-Complexes|") || classes.contains("|Protein-Small-Molecule-Complexes|"))
+				return new Complex(c,id);
+			else if(classes.contains("|Proteins|"))
+				return new Monomer(c,id);
+			else if(classes.contains("|Transcription-Units|"))
+				return new TranscriptionUnit(c,id);
+			else if(classes.contains("|Enzymatic-Reactions|"))
+				return new Catalysis(c,id);
+			else if(classes.contains("|Promoters|"))
+				return new Promoter(c,id);
+			else if(classes.contains("|Chromosomes|"))
+				return new Chromosome(c,id);
+			else if(classes.contains("|All-Genes|") || classes.contains("|Polynucleotides|"))
+				return new Gene(c,id);
+			else if(classes.contains("|DNA-Reactions|"))
+				return new DNAReaction(c,id);
+			else if(classes.contains("|Transport-Reactions|"))
+				return new TransportReaction(c,id);
+			else if(classes.contains("|Small-Molecule-Reactions|"))
+				return new SmallMoleculeReaction(c,id);
+			else if(classes.contains("|Reactions|"))
+			{
+				if(!c.slotIsNil(id,"ENZYMATIC-REACTION"))
+					return new EnzymeReaction(c,id);
+				else
+				{
+					//System.out.println("");
+					//c.printLists(c.getInstanceAllTypes(id));
+					return new EnzymeReaction(c,id);
+					//return new Reaction(c,id);
+				}
+			}
+			else if(classes.contains("|Pathways|"))
+				return new Pathway(c,id);
+			else if(classes.contains("|Regulation|"))
+				return new Regulation(c,id);
+			else if(classes.contains("|Compounds|") || classes.contains("|Subatomic-Particles|"))
+				return new Compound(c,id);
+			else if(classes.contains("|Chromosomes|"))
+				return new Chromosome(c,id);
+			else if(classes.contains("|Organisms|"))
+				return new Organism(c,id);
 			else
 			{
-				//System.out.println("");
-				//c.printLists(c.getInstanceAllTypes(id));
-				return new EnzymeReaction(c,id);
-				//return new Reaction(c,id);
+				return new Frame(c,id);
 			}
 		}
-		else if(classes.contains("|Pathways|"))
-			return new Pathway(c,id);
-		else if(classes.contains("|Regulation|"))
-			return new Regulation(c,id);
-		else if(classes.contains("|Compounds|") || classes.contains("|Subatomic-Particles|"))
-			return new Compound(c,id);
-		else if(classes.contains("|Chromosomes|"))
-			return new Chromosome(c,id);
-		else if(classes.contains("|Organisms|"))
-			return new Organism(c,id);
-		else
+		catch(PtoolsErrorException ex)
 		{
-			return new Frame(c,id);
+			if(!c.frameExists(id))
+			{
+				//throw new PtoolsErrorException("Frame "+id+" not in KB!");
+				System.err.println("Frame "+id+" not in KB!");
+				return new Frame(c,id);
+			}
+			else
+			{
+				throw ex;
+			}
 		}
 	}
 	
