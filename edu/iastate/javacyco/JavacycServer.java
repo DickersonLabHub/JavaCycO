@@ -197,24 +197,7 @@ public class JavacycServer
 			String[] localQueryParts = localQuery.split(":",2);
 			String localFunction = localQueryParts[0];
 			String[] localFunctionParams = localQueryParts.length>1 ? localQueryParts[1].split(",") : null;
-			if(localFunction.equals("SEARCH"))
-			{
-				String name = localFunctionParams[0];
-				String GFPtype = localFunctionParams[1];
-				String org = localFunctionParams[2];
-				if(!org.equals(localConnection.getOrganismID()))
-					localConnection.selectOrganism(org);
-				ArrayList<Frame> rst = localConnection.search(name, GFPtype, true);
-				ArrayList<String> ids = new ArrayList<String>();
-				for(Frame f : rst)
-				{
-					ids.add(f.getLocalID());
-				}
-				String resp = JavacycConnection.ArrayList2LispList(ids);
-				if(verbose) System.out.println("Response for server side query: "+resp);
-				toClient.println(resp);
-			}
-			else if(localFunction.equals("PO"))
+			if(localFunction.equals("PO"))
 			{
 				String org = localFunctionParams[0];
 				if(!org.equals(localConnection.getOrganismID()))

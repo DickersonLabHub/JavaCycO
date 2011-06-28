@@ -55,11 +55,6 @@ public class JavacycConnection {
     private ArrayList<Long> waits;
     
     /**
-     * A map of names -> frame ids used for caching search hits.
-     */
-    public HashMap<String,ArrayList<String>> searchCache;
-    
-    /**
      * A map of hierarchically indented pathway class names -> pathway class frame ids that can caches the current organisms 
      * pathway ontology.
      */
@@ -113,7 +108,6 @@ public class JavacycConnection {
     private void commonSetup()
     {
     	waits = new ArrayList<Long>();
-    	searchCache = new HashMap<String,ArrayList<String>>();
     	pathwayOntologyCache = new LinkedHashMap<String,String>();
     	cache = new HashMap<String,Frame>();
     }
@@ -1454,7 +1448,7 @@ public class JavacycConnection {
        See the PathwayTools terminal windows for details when this happens.
        The PtoolsErrorException will contain a message giving the query that caused the error.
     */
-    private ArrayList callFuncArray(String func,boolean wrap) throws PtoolsErrorException
+    public ArrayList callFuncArray(String func,boolean wrap) throws PtoolsErrorException
     {
 		makeSocket();
 		String query = "";
@@ -2503,112 +2497,34 @@ public class JavacycConnection {
 	}
 	
 	/**
-	* Search remotely.  Calls JavacycConnection#search(String, String, boolean) with here=false.
-	* @see JavacycConnection#search(String, String, boolean)
+	* Search for a string in a certain frame type.
 	* @param search The string to search for
 	* @param type The GFP type of objects to search.  Use JavaCyc class' GFPtype static fields, ie Compound.GFPtype to search all Compounds, 
 	* or Gene.GFPtype to search all Genes.
 	* @return An ArrayList of Frames containing the Frames matching the search string
 	*/
 	public ArrayList<Frame> search(String search,String type)
-	throws PtoolsErrorException {
-		return search(search,type,false);
-	}
-	
-	/**
-    * Search the PGDB for anything of a certain class with the ID, name, or synonym containing a search string.  If the name has been 
-    * seen before by another search, use the cached result.
-    * @param search The string to search for
-    * @param type The GFP type of objects to search.  Use JavaCyc class' GFPtype static fields, ie Compound.GFPtype to search all Compounds, 
-    * or Gene.GFPtype to search all Genes.
-    * @param here if true, query all the data to the local machine and build the list, else ask the remote server to do it.
-    * @return An ArrayList of Frames containing the Frames matching the search string
-    */
-	public ArrayList<Frame> search(String search,String type,boolean here)
-	throws PtoolsErrorException {
-		//System.out.println("SEARCHING FOR "+type+":"+search);
-		if(search==null || search.length()==0) return new ArrayList<Frame>();
-		search = search.toUpperCase();
-		ArrayList<String> rst = new ArrayList<String>();
-		String key = this.getOrganismID()+":"+type+":"+search;
-		if(searchCache.containsKey(key))
+	throws PtoolsErrorException
+	{
+		//return search(search,type,false);
+		ArrayList rst = this.callFuncArray("substring-search '"+type+" \""+search+"\" :insert-html-tags? NIL");
+		//this.printLists(rst);
+		ArrayList<Frame> ret = new ArrayList<Frame>();
+		for(Object obj : rst)
 		{
-			//System.out.println(searchCache.get(search).size()+" cached / "+searchCache.size());
-			return Frame.load(this,searchCache.get(key));
-		}
-		else if(here)
-		{
-			ArrayList ids = this.getClassAllInstances(type);
-			ArrayList<Frame> frames = Frame.load(this,ids);
-			for(Frame f : frames)
+			ArrayList hit = (ArrayList)obj;
+			for(Object obj2 : hit)
 			{
-				String id = f.getLocalID();
-				if(id.toUpperCase().contains(search)) 
+				String s = (String)obj2;
+				if(!s.startsWith("\"") && !s.equals("."))
 				{
-					rst.add(id);
-					addToSearchCache(type,id,id);
-					continue;
-				}
-				String cn = Network.removeHTML(f.getCommonName());
-				if(cn.toUpperCase().contains(search)) 
-				{
-					rst.add(id);
-					addToSearchCache(type,cn,id);
-					continue;
-				}
-				boolean hit = false;
-				for(Object nameObj : f.getSlotValues("NAMES"))
-				{
-					String name = Network.removeHTML((String)nameObj);
-					addToSearchCache(type,name,id);
-					if(name.toUpperCase().contains(search)) 
-					{
-						hit = true;
-						break;
-					}
-				}
-				if(hit)
-				{
-					rst.add(id);
-					continue;
-				}
-				for(Object synObj : f.getSlotValues("SYNONYMS"))
-				{
-					String syn = Network.removeHTML((String)synObj);
-					addToSearchCache(type,syn,id);
-					if(syn.toUpperCase().contains(search)) 
-					{
-						hit = true;
-						break;
-					}
-				}
-				if(hit)
-				{
-					rst.add(id);
-					continue;
+					ret.add(Frame.load(this, s));
 				}
 			}
-			//System.out.println(rst.size()+" not cached / "+searchCache.size());
 		}
-		else
-		{
-			rst = (ArrayList<String>)this.callFuncArray("***SEARCH:"+search+","+type+","+this.organism,false);
-		}
-		if(isCaching() && rst.size()>0)
-			searchCache.put(key, rst);
-		return Frame.load(this,rst);
+		return ret;
 	}
 	
-	private void addToSearchCache(String type,String name,String frameId)
-	{
-		if(isCaching())
-		{
-			String key = this.getOrganismID()+":"+type+":"+name;
-			if(!searchCache.containsKey(key.toUpperCase()))
-				searchCache.put(key.toUpperCase(), new ArrayList<String>());
-			searchCache.get(key.toUpperCase()).add(frameId);
-		}
-	}
 	
     /**
     Search for any Frame in the PGDB using the GFP function, get-frame-labeled.
