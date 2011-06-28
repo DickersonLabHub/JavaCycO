@@ -245,15 +245,12 @@ public class Frame
 	*/
 	public HashMap<String,ArrayList> getSlots() throws PtoolsErrorException
 	{
-		if(this.inKB())
+		ArrayList<String> slotsInKb = conn.getFrameSlots(ID);
+		for(String slot : slotsInKb)
 		{
-			ArrayList<String> slotsInKb = conn.getFrameSlots(ID);
-			for(String slot : slotsInKb)
+			if(!slots.keySet().contains(slot))
 			{
-				if(!slots.keySet().contains(slot))
-				{
-					this.loadSlot(slot);
-				}
+				this.loadSlot(slot);
 			}
 		}
 		return slots;
@@ -318,8 +315,8 @@ public class Frame
 	*/
 	public ArrayList getSlotValues(String slot) throws PtoolsErrorException
 	{
-		if(!this.inKB()) return new ArrayList();
-		if(!this.hasSlot(slot)) return new ArrayList();//throw new PtoolsErrorException("Slot "+slot+" for Frame "+ID+" does not exist");
+		//if(!this.inKB()) return new ArrayList();
+		//if(!this.hasSlot(slot)) return new ArrayList();//throw new PtoolsErrorException("Slot "+slot+" for Frame "+ID+" does not exist");
 		if(slots.get(slot)==null || !slots.containsKey(slot))
 			this.loadSlot(slot);
 		if(!slots.containsKey(slot))
