@@ -16,6 +16,7 @@ package edu.iastate.javacyco;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
 Compounds or metabolites.
@@ -103,42 +104,25 @@ public class Compound extends Frame
 	*/
 	public ArrayList<Frame> getPathways()
 	throws PtoolsErrorException {
-
 		if(pathways==null || pathways.size()==0)
 		{
-			ArrayList<Frame> pways = new ArrayList<Frame>();
-
-			//Get the pathways where this compound is in a reaction as a reactant
-			for (Reaction r : this.reactantIn()) {
-				for (Frame pway : r.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-			}
-
-			//Get the pathways where this compound is in a reaction as a product
-			for (Reaction r : this.productOf()) {
-				for (Frame pway : r.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-			}
-
-			//Get the pathways where this compound is in a reaction as a cofactor
-			for (Frame enzyme : this.cofactorOf()) {
-				for (Frame pway : enzyme.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-			}
-
-			//Get the pathways where this compound is in a reaction as a prosthetic group
-			for (Frame enzyme : this.prostheticGroupOf()) {
-				for (Frame pway : enzyme.getPathways()) if (!pways.contains(pway)) pways.add(pway);
-			}
-
-			ArrayList<Frame> allPways = new ArrayList<Frame>();
-			allPways.addAll(pways);
-			for (Frame pway : pways) {
-				for (Frame superPway : Pathway.load(conn,pway.getSlotValues("Super-Pathways"))) {
-					allPways.add(superPway);
+			pathways = new ArrayList<Frame>();
+			HashSet<String> done = new HashSet<String>();
+			ArrayList rst = this.conn.callFuncArray("loop for rxn in (append (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'APPEARS-IN-LEFT-SIDE-OF)) (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'APPEARS-IN-RIGHT-SIDE-OF)) (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'COFACTOR-OF)) (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'PROSTHETIC-GROUPS-OF)) ) for pwy = (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES rxn 'IN-PATHWAY)) unless (fequal pwy NIL) collect pwy", true);
+			for(Object obj : rst)
+			{
+				ArrayList objList = (ArrayList)obj;
+				for(Object obj2 : objList)
+				{
+					String s = (String)obj2;
+					if(!done.contains(s))
+					{
+						pathways.add(Frame.load(conn, s));
+						done.add(s);
+					}
 				}
 			}
-			pathways = pways;
 		}
-		
-		
 		return pathways;
 	}
 	
