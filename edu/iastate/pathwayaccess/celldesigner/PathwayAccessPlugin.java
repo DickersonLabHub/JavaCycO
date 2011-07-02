@@ -14,6 +14,8 @@
  */
 package edu.iastate.pathwayaccess.celldesigner;
 
+import edu.iastate.pathwayaccess.common.Relation;
+import edu.iastate.pathwayaccess.common.Prompt;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Insets;

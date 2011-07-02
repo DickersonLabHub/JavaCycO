@@ -60,7 +60,7 @@ import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.*;
 
-import pathwayaccess.PathwayAccessPlugin.CommitProgressMonitor;
+import edu.iastate.pathwayaccess.PathwayAccessPlugin.CommitProgressMonitor;
 
 import jp.sbi.celldesigner.plugin.CellDesignerPlugin;
 

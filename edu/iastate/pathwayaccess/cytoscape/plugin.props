@@ -1,0 +1,41 @@
+#plugin.props
+
+# This props file should be filled out and included in the plugin jar file.  This props file will be used
+# to put information into the Plugin Manager about the plugin
+
+# -- The following properties are REQUIRED -- #
+
+# The plugin name that will be displayed to users, white space within name is not allowed
+pluginName=PathwayAccess
+
+# Description used to give users information about the plugin such as what it does.
+# Html tags are encouraged for formatting purposes.
+pluginDescription=This is wrapper plugin that supplies a search interface to combine networks from various databases.<br>This plugin should only be downloaded with plugins which extend it (i.e. MetNetSearchClient).<p>
+
+# Plugin version number, this must be two numbers separated by a decimlal.  Ex. 0.2, 14.03
+# NOTE: When comparing for newer versions 1.10 is a newer version than 1.1 or 1.9.
+# Any version that does not match this scheme will cause the manager to error and
+# ignore that plugin.
+pluginVersion=0.3
+
+# Compatible Cytoscape version. If there are more than one version, seperate by ",".
+cytoscapeVersion=2.7,2.8,2.8.1
+
+# Category, use one of the categories listed on the http://cytoscape.org/plugins2.php site
+pluginCategory=Network and Attribute I/O
+
+# -- The following properties are OPTIONAL -- #
+
+# URL to a website that gives more information about your plugin, Ex. http://my-lab-site.org
+# THIS NEEDS CHANGED TO THE CORRECT WEBSITE WHEN CREATED
+projectURL=http://vrac.iastate.edu/~jlv/pathwayaccess
+
+# List of authors.  Note each author and institution pair are separated by a : (colon)
+# each additional author institution pair must be separated from other pairs bye a ; (semicolon)
+pluginAuthorsInstitutions=Greg Hazen : Iowa State University
+
+# Date this plugin/plugin version was released
+releaseDate=April 13, 2011
+
+# If this plugin is never meant to be downloaded except as part of a plugin (not common) add this property.  Default is "no"
+themeOnly=yes
