@@ -524,7 +524,7 @@ public class BioCycAccess extends PathwayAccessPlugin<Pathway, Reaction, Frame, 
 
     @Override
     public void setUpNameRelations() {
-        //TODO
+         //This method is specific to metNetAccess. This functionality is done in the getType method
         return;
     }
 
@@ -762,6 +762,16 @@ public class BioCycAccess extends PathwayAccessPlugin<Pathway, Reaction, Frame, 
         }
         return false;
     }
-
+    /*
+     * This method was added for the main menu's progress bar. For BioCycAcess, since the progress can't be tracked,	
+     * the progress bar needs to be intermediate. 	
+     * @return true if the main menu's progress bar is intermediate 	
+     */	
+    @Override
+    public boolean isIntermediate(){
+	
+        return true;
+	
+    }
     
 }
