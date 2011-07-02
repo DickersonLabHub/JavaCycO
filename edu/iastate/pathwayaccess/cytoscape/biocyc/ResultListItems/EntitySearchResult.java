@@ -2,6 +2,7 @@ package edu.iastate.pathwayaccess.cytoscape.biocyc.ResultListItems;
 
 import edu.iastate.pathwayaccess.cytoscape.ResultListItems.SearchResultInterface;
 import edu.iastate.javacyco.Frame;
+import edu.iastate.javacyco.Network;
 import edu.iastate.javacyco.PtoolsErrorException;
 
 /**
@@ -23,7 +24,7 @@ public class EntitySearchResult implements SearchResultInterface {
     public EntitySearchResult(Frame ent) {
         this.ent = ent;
         try {
-            name = ent.getCommonName(); //.name;
+             name = Network.removeHTML(ent.getCommonName()); //.name;
         } catch (PtoolsErrorException ex) {
             name = "unknown";
         }
