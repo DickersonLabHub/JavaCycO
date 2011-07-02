@@ -1,16 +1,8 @@
 package edu.iastate.pathwayaccess.cytoscape;
 
 import edu.iastate.pathwayaccess.common.Relation;
-import edu.iastate.pathwayaccess.cytoscape.ClientUI.FilterTable;
-import edu.iastate.pathwayaccess.cytoscape.ClientUI.PopupMessages;
-import edu.iastate.pathwayaccess.cytoscape.ClientUI.WindowManager;
-import edu.iastate.pathwayaccess.cytoscape.ClientUI.pnlDetails;
-import edu.iastate.pathwayaccess.cytoscape.ClientUI.pnlMainPanel;
-import edu.iastate.pathwayaccess.cytoscape.ClientUI.pnlNetworkTabs;
-import edu.iastate.pathwayaccess.cytoscape.ClientUI.pnlSelectNetwork;
-import edu.iastate.pathwayaccess.cytoscape.ResultListItems.NetworkResultInterface;
-import edu.iastate.pathwayaccess.cytoscape.ResultListItems.ResultsFilterInterface;
-import edu.iastate.pathwayaccess.cytoscape.ResultListItems.SearchResultInterface;
+import edu.iastate.pathwayaccess.cytoscape.ClientUI.*;
+import edu.iastate.pathwayaccess.cytoscape.ResultListItems.*;
 import cytoscape.CyEdge;
 import cytoscape.CyNetwork;
 import cytoscape.CyNode;
