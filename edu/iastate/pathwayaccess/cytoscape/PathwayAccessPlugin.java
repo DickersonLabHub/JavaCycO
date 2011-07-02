@@ -645,4 +645,12 @@ public abstract class PathwayAccessPlugin<networkType, reactionType, participant
      */
     protected abstract boolean isSelectedHighlyConnectedEntity(/*participantType*/String participant);
 
+        /**
+     * Returns true if the main menu's progress bar is intermediate
+     * @return True if the progress bar in the main menu is intermediate
+     */
+    public abstract boolean isIntermediate();
+
 }
+
+
