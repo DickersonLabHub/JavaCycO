@@ -129,7 +129,9 @@ public class Catalysis extends Influenceable
 	throws PtoolsErrorException {
 		ArrayList<Frame> pways = new ArrayList<Frame>();
 		for (Frame rxn : this.getReactions()) {
-			for (Frame pway : rxn.getPathways()) if (!pways.contains(pway)) pways.add(pway);
+			for (Frame pway : rxn.getPathways())
+                            if (!pways.contains(pway)) 
+                                pways.add(pway);
 		}
 		pathways = pways;
 		return pathways;
