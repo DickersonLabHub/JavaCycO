@@ -84,7 +84,7 @@ public class WindowManager<networkType, reactionType, participantType, modifierT
      */
     protected pnlMainPanel getPnlMainPanel() {
         if(pnlMainPanel == null)
-            pnlMainPanel = new pnlMainPanel(database, this, properties, getPluginFrame());
+            pnlMainPanel = new pnlMainPanel(database, this, properties, getPluginFrame(), database.isIntermediate());
         return pnlMainPanel;
     }
     /**

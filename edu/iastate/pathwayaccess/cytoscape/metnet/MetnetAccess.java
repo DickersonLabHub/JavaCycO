@@ -160,41 +160,53 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
     @Override
     public ArrayList<SearchResultInterface> search(String searchTerm, boolean wholeWordOnly,
             String organism, String searchType, NewThreadWorker worker) {
+//PART I: translates the user input
 
         if(worker.isCancelled())
             return null;
         worker.setStatusTitle("Preparing search criteria...");
+
         //Check for null organism or search type
         if (organism == null)
-            organism = ALL_ORGANISMS;
-        if (searchType == null)
+            organism = ALL_ORGANISMS; //redefines organismName that was passed it for a more accurate name
+        if (searchType == null) //Same as organism name
             searchType = ALL_SEARCH_TYPES;
+
         //Make sure lists of available organisms and entity types are set
-        if (organisms == null)
-            getOrganismNames();
+        if (organisms == null) //organisms may be full already because of having to be filled for the menu that the user chooses from before searching
+            //how could this not happen??? You need to get this everytime the menu pops up anyways????
+            getOrganismNames(); //this fills up organisms and organismNames
+
+
         if(worker.isCancelled())
             return null;
+
+
         if (searchTypes == null)
             getSearchTypes();
-        //Sort search terms
+
+
+        //Sort search terms the user passed in and stores it in an array
         String[] terms = splitSearchTerms(searchTerm);
 
-        //Create an array of the organism(s) to search
-        Organism[] orgs = new Organism[0];
+        //Create an array of the organism(s) to search (the size is either one or size of the list of all organisms)
+            //Matches the name of the organism passed in by the user to the organism itself
+        Organism[] orgs = new Organism[0];//an array of zero organisms just to initialize
+        //orgs is an array because of the choice of "All organisms", other choices will make this array a size 1 containing just one organism
         if(organism.equals(ALL_ORGANISMS))
-            orgs = organisms;
-        else //Get the matching organism
+            orgs = organisms; //If the organism equals the value we redefined earlier, orgs becomes the list of all organisms (organisms are filled earlier)
+        else //Get the matching organism (the user passes in the organism name but we need to find the actual organism that matches that name)
         {
-            for(int i = 0; i < organismNames.length; i++)
+            for(int i = 0; i < organismNames.length; i++) //could have started i at 1
                 if(organismNames[i].equals(organism))
                     //organisms[i-1] to account for "All Organisms"
                     orgs = new Organism[]{organisms[i-1]};
         }
 
         //Create an array of the search type(s) to search and set booleans
-        //for whether to search based on pathways and IDs
-        boolean searchPathways, searchIds;
-        EntityType[] types = new EntityType[0];
+        //booleans for whether to search based on pathways and IDs
+        boolean searchPathways, searchIds; //why do we only care about pathways and ids and not the other types??
+        EntityType[] types = new EntityType[0]; //same as organism
         if(searchType.equals(ALL_SEARCH_TYPES))
         {
             types = searchTypes;
@@ -218,7 +230,7 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
             //Get the matching entity type
             for(int i = 0; i < searchTypeNames.length; i++)
                 if(searchTypeNames[i].equals(searchType))
-                    //searchTypes[i-3] to account for "All Types" and "Pathway"
+                    //searchTypes[i-3] to account for "All Types", "Pathway", and "UniqueID" which were already taken care of
                     types = new EntityType[]{searchTypes[i-3]};
             searchPathways = false;
             searchIds = false;
@@ -250,6 +262,8 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
          *
          */
 
+//PART TWO: searching
+
         //Stores the results matching the criteria (variable returned)
         ArrayList<SearchResultInterface> results = new ArrayList<SearchResultInterface>();
 
@@ -260,6 +274,7 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
         Double progress = 0.0;
         Double increment = -1.0; //10000.0 / 75000;
         int numOrgs = 0, numPaths = 0, numTerms = 0, numTypes = 0;
+
         //For each organism:
         for(Organism org : orgs)
         {
@@ -295,12 +310,12 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
                         getPathways(term, wholeWordOnly, path, results);
                     }
                     //For each entity type, get all entities from the pathway
-                    for(EntityType type : types)
+                    for(EntityType type : types) //only goes here when it's not a pathway search or an Id search
                     {
                         if(worker.isCancelled())
                             return null;
                         //Update Progress Monitor
-                        if(increment.equals(-1.0)) 
+                        if(increment.equals(-1.0))
                         {
                             numTypes = types.length;
                             increment = 100.0 / (numOrgs * numPaths * numTerms * numTypes);
@@ -500,7 +515,7 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
             return;
         }
         //For each entitiy, filter based on criteria
-        for(Entity ent : pathEnts)
+        for(Entity ent : pathEnts) //actual metnet entities
         {
             //Add entities if their name includes the search term
             if(!entities.contains(ent)) //Doesn't work in the MetNet API
@@ -512,7 +527,7 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
         }
 
         //Add filtered entities to the results list
-        for(int i = 0; i < entities.count(); i++)
+        for(int i = 0; i < entities.count(); i++) //convert it to our entities search result (Specific to us)
         {
             //Create the results object
             EntitySearchResult ent = new EntitySearchResult(entities.get(i));
@@ -523,7 +538,7 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
     }
 
     /**
-     * Creates filter tables corresponding to the given networks. Filter types 
+     * Creates filter tables corresponding to the given networks. Filter types
      * considered include: Common Entities, Interactions
      * @param networks Networks to create corresponding filter tables for
      * @return filter tables corresponding to the given networks
@@ -722,7 +737,7 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
             synonyms = ((LocalEntity)o).getEntity().getSynonyms();
         else if(o instanceof Entity)
             synonyms = ((Entity)o).getSynonyms();
-        
+
         ArrayList<String> lst = new ArrayList();
         for(String syn : synonyms)
             lst.add(syn);
@@ -811,5 +826,15 @@ public class MetnetAccess extends PathwayAccessPlugin<Pathway, Interaction, Loca
         return false;
     }
     */
+
+    /**
+     * This method was added for the main menu's progress bar. For MetnetAccess, since the progress can be tracked
+     * using the number of pathways, the progress bar doesn't need to be intermediate.
+     * @return false if the main menu's progress bar is not intermediate
+     */
+    @Override
+    public boolean isIntermediate(){
+        return false;
+    }
 
 }

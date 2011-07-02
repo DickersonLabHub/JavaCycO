@@ -85,7 +85,7 @@ public class pnlMainPanel extends javax.swing.JPanel {
     //private pnlStatusBar statusBar = new pnlStatusBar(false);
 
     /** Creates new form mainPanel */
-    public pnlMainPanel(PathwayAccessPlugin databaseAccess, WindowManager winManager, PluginProperties properties, javax.swing.JFrame frame) {
+    public pnlMainPanel(PathwayAccessPlugin databaseAccess, WindowManager winManager, PluginProperties properties, javax.swing.JFrame frame, boolean isIntermediate) {
         //Set the access to the database
         this.databaseAccess = databaseAccess;
         this.winManager = winManager;
@@ -126,7 +126,7 @@ public class pnlMainPanel extends javax.swing.JPanel {
             layout.show(layoutResults, "RESULTS");
 
         /* Setup the Status Bar Panel */
-        pnlStatusBar statusBar = new pnlStatusBar(false, new NewThreadWorker());
+        pnlStatusBar statusBar = new pnlStatusBar(isIntermediate, new NewThreadWorker());
         statusBar.setTaskString("Choose a search");
         layoutStatusBar.add(statusBar, "STATUS");
         layoutStatusBar.setVisible(true);
