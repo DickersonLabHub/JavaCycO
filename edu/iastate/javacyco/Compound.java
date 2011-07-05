@@ -108,7 +108,7 @@ public class Compound extends Frame
 		{
 			pathways = new ArrayList<Frame>();
 			HashSet<String> done = new HashSet<String>();
-			ArrayList rst = this.conn.callFuncArray("loop for rxn in (append (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'APPEARS-IN-LEFT-SIDE-OF)) (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'APPEARS-IN-RIGHT-SIDE-OF)) (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'COFACTOR-OF)) (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES 'WATER 'PROSTHETIC-GROUPS-OF)) ) for pwy = (WITH-ORGANISM (:ORG-ID 'VITI) (GET-SLOT-VALUES rxn 'IN-PATHWAY)) unless (fequal pwy NIL) collect pwy", true);
+			ArrayList rst = this.conn.callFuncArray("WITH-ORGANISM (:ORG-ID '"+conn.getOrganismID()+") (MAPCAR #'OBJECT-NAME (LOOP FOR RXN IN (APPEND (WITH-ORGANISM (:ORG-ID '"+conn.getOrganismID()+")(MAPCAR #'OBJECT-NAME (GET-SLOT-VALUES 'WATER 'APPEARS-IN-LEFT-SIDE-OF))) (WITH-ORGANISM (:ORG-ID '"+conn.getOrganismID()+")(MAPCAR #'OBJECT-NAME (GET-SLOT-VALUES 'WATER 'APPEARS-IN-RIGHT-SIDE-OF))) (WITH-ORGANISM (:ORG-ID '"+conn.getOrganismID()+")(MAPCAR #'OBJECT-NAME (GET-SLOT-VALUES 'WATER 'COFACTOR-OF))) (WITH-ORGANISM (:ORG-ID '"+conn.getOrganismID()+")(MAPCAR #'OBJECT-NAME (GET-SLOT-VALUES 'WATER 'PROSTHETIC-GROUPS-OF)))) FOR PWY = (WITH-ORGANISM (:ORG-ID '"+conn.getOrganismID()+")(MAPCAR #'OBJECT-NAME (GET-SLOT-VALUES RXN 'IN-PATHWAY))) UNLESS (FEQUAL PWY NIL) COLLECT PWY))", true);
 			for(Object obj : rst)
 			{
 				ArrayList objList = (ArrayList)obj;
