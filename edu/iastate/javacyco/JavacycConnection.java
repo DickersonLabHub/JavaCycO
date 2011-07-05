@@ -2301,15 +2301,18 @@ public class JavacycConnection {
 		{
 			e.printStackTrace();
 		}
-		System.out.println("~~THE FOLLOWING ARE NOT SLOTS~~\n~GFP SUPERCLASSES: ");
-		for(Object t : this.getInstanceAllTypes(id))
+		if(!this.getFrameType(id).toUpperCase().equals(":CLASS"))
 		{
-			System.out.println("\t"+(String)t);
-		}
-		System.out.println("~DIRECT GFP SUPERCLASSES: ");
-		for(Object t : this.getInstanceDirectTypes(id))
-		{
-			System.out.println("\t"+(String)t);
+			System.out.println("~~THE FOLLOWING ARE NOT SLOTS~~\n~GFP SUPERCLASSES: ");
+			for(Object t : this.getInstanceAllTypes(id))
+			{
+				System.out.println("\t"+(String)t);
+			}
+			System.out.println("~DIRECT GFP SUPERCLASSES: ");
+			for(Object t : this.getInstanceDirectTypes(id))
+			{
+				System.out.println("\t"+(String)t);
+			}
 		}
 	}
 
