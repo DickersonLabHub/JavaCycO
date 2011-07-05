@@ -2510,7 +2510,9 @@ public class JavacycConnection {
 	throws PtoolsErrorException
 	{
 		//return search(search,type,false);
-		ArrayList rst = this.callFuncArray("substring-search '"+type+" \""+search+"\" :insert-html-tags? NIL");
+		if(type==null) type = "NIL";
+		else type = "'"+type;
+		ArrayList rst = this.callFuncArray("substring-search "+type+" \""+search+"\" :insert-html-tags? NIL");
 		//this.printLists(rst);
 		ArrayList<Frame> ret = new ArrayList<Frame>();
 		for(Object obj : rst)
