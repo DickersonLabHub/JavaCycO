@@ -117,8 +117,12 @@ public class Compound extends Frame
 					String s = (String)obj2;
 					if(!done.contains(s))
 					{
-						pathways.add(Frame.load(conn, s));
-						done.add(s);
+						Frame pwy = Frame.load(conn, s);
+						if(pwy instanceof Pathway)
+						{
+							pathways.add(pwy);
+							done.add(s);
+						}
 					}
 				}
 			}
