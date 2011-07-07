@@ -15,12 +15,15 @@ public class OntologyTerm extends Frame {
 	
 	public ArrayList<Frame> getPathways()
 	throws PtoolsErrorException {
-		ArrayList<Frame> pways = new ArrayList<Frame>();
-		for(OntologyTerm child : this.getChildren())
+		if(pathways==null || pathways.size()==0)
 		{
-			pways.addAll(child.getPathways());
+			ArrayList<Frame> pways = new ArrayList<Frame>();
+			for(OntologyTerm child : this.getChildren())
+			{
+				pways.addAll(child.getPathways());
+			}
+			pathways = pways;
 		}
-		pathways = pways;
 		return pathways;
 	}
 	
@@ -41,7 +44,9 @@ public class OntologyTerm extends Frame {
 		for(Object fido : this.getSlotValues("OCELOT-GFP::SUBS"))
 		{
 			String fid = (String)fido;
-			rst.add((OntologyTerm)Frame.load(conn,fid));
+			Frame f = Frame.load(conn,fid);
+			if(f instanceof OntologyTerm)
+				rst.add((OntologyTerm)f);
 			
 		}
 		return rst;
