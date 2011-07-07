@@ -2504,9 +2504,10 @@ public class JavacycConnection {
 	* @param search The string to search for
 	* @param type The GFP type of objects to search.  Use JavaCyc class' GFPtype static fields, ie Compound.GFPtype to search all Compounds, 
 	* or Gene.GFPtype to search all Genes.
+	* @param includeOntologyTerms whether or not to include OntologyTerms in result
 	* @return An ArrayList of Frames containing the Frames matching the search string
 	*/
-	public ArrayList<Frame> search(String search,String type)
+	public ArrayList<Frame> search(String search,String type,boolean includeOntologyTerms)
 	throws PtoolsErrorException
 	{
 		//return search(search,type,false);
@@ -2523,11 +2524,26 @@ public class JavacycConnection {
 				String s = (String)obj2;
 				if(!s.startsWith("\"") && !s.equals("."))
 				{
-					ret.add(Frame.load(this, s));
+					Frame f = Frame.load(this, s);
+					if(includeOntologyTerms || !(f instanceof OntologyTerm))
+						ret.add(f);
 				}
 			}
 		}
 		return ret;
+	}
+
+	/**
+	* Search for a string in a certain frame type.
+	* @param search The string to search for
+	* @param type The GFP type of objects to search.  Use JavaCyc class' GFPtype static fields, ie Compound.GFPtype to search all Compounds,
+	* or Gene.GFPtype to search all Genes.
+	* @return An ArrayList of Frames containing the Frames matching the search string
+	*/
+	public ArrayList<Frame> search(String search,String type)
+	throws PtoolsErrorException
+	{
+		return search(search,type,true);
 	}
 	
 	
