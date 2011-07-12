@@ -2507,13 +2507,13 @@ public class JavacycConnection {
 	* @param includeOntologyTerms whether or not to include OntologyTerms in result
 	* @return An ArrayList of Frames containing the Frames matching the search string
 	*/
-	public ArrayList<Frame> search(String search,String type,boolean includeOntologyTerms)
+	public ArrayList<Frame> search(String search,String type,boolean includeOntologyTerms,boolean allOrgs)
 	throws PtoolsErrorException
 	{
 		//return search(search,type,false);
 		if(type==null) type = "NIL";
 		else type = "'"+type;
-		ArrayList rst = this.callFuncArray("substring-search "+type+" \""+search+"\" :insert-html-tags? NIL");
+		ArrayList rst = this.callFuncArray("substring-search "+type+" \""+search+"\" :insert-html-tags? NIL",!allOrgs);
 		//this.printLists(rst);
 		ArrayList<Frame> ret = new ArrayList<Frame>();
 		for(Object obj : rst)
@@ -2544,6 +2544,19 @@ public class JavacycConnection {
 	throws PtoolsErrorException
 	{
 		return search(search,type,true);
+	}
+
+	/**
+	* Search for a string in a certain frame type.
+	* @param search The string to search for
+	* @param type The GFP type of objects to search.  Use JavaCyc class' GFPtype static fields, ie Compound.GFPtype to search all Compounds,
+	* or Gene.GFPtype to search all Genes.
+	* @return An ArrayList of Frames containing the Frames matching the search string
+	*/
+	public ArrayList<Frame> search(String search,String type,boolean includeOntologyTerms)
+	throws PtoolsErrorException
+	{
+		return search(search,type,includeOntologyTerms,false);
 	}
 	
 	
