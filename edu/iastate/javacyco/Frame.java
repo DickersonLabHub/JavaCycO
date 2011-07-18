@@ -944,43 +944,32 @@ public class Frame
 	    ret += "\t<att type=\"string\" name=\"class\" value=\""+this.getGFPtype()+"\"/>\n";
 	    if(rich)
 	    {
-		try //Complex-formation frames don't actually exist in PGDBs, so they will throw errors
+		for(String slot : getSlots().keySet())
 		{
-			for(String slot : getSlots().keySet())
-			{
-				ArrayList val = getSlotValues(slot);
-				if(val.size()==0 || slot.equals("COMMENT")) continue;
-				ret += "\t<att type=\"string\" name=\""+slot+"\" value=\""+Network.removeHTML(Network.ArrayList2textList(val).replace("\"","\\\""))+"\"/>\n";
-			}
-			String type = this.getCytoscapeShape();
-			String fill = String.format("%06X",Integer.parseInt(this.getColor(),16));
-			ret += "\t<graphics type=\""+type+"\" h=\"40.0\" w=\"40.0\" x=\"0.0\" y=\"0.0\" fill=\"#"+fill+"\" width=\"1\" outline=\"#666666\" cy:nodeTransparency=\"1.0\" cy:nodeLabelFont=\"SansSerif.bold-0-12\" cy:borderLineType=\"solid\"/>\n";
-			if(pathways)
-			{
-				HashSet<String> pwys = new HashSet<String>();
-				for(Frame pwy : getPathways())
-				{
-					pwys.add(pwy.getLocalID()+"--"+Network.removeHTML(pwy.getCommonName()));
-				}
-				ret += "\t<att type=\"string\" name=\"pathway\" value=\""+Network.ArrayList2textList(new ArrayList<String>(pwys))+"\"/>\n";
-			}
-			if(nodeAtts!=null && nodeAtts.containsKey(getLocalID()))
-			{
-				HashMap<String,ArrayList<String>> extraAtts = nodeAtts.get(getLocalID());
-				for(String name : extraAtts.keySet())
-				{
-					ret += "\t<att type=\"string\" name=\""+name+"\" value=\""+Network.ArrayList2textList(extraAtts.get(name))+"\"/>\n";
-				}
-
-			}
+			ArrayList val = getSlotValues(slot);
+			if(val.size()==0 || slot.equals("COMMENT")) continue;
+			ret += "\t<att type=\"string\" name=\""+slot+"\" value=\""+Network.removeHTML(Network.ArrayList2textList(val).replace("\"","\\\""))+"\"/>\n";
 		}
-		catch(PtoolsErrorException ex)
+		String type = this.getCytoscapeShape();
+		String fill = String.format("%06X",Integer.parseInt(this.getColor(),16));
+		ret += "\t<graphics type=\""+type+"\" h=\"40.0\" w=\"40.0\" x=\"0.0\" y=\"0.0\" fill=\"#"+fill+"\" width=\"1\" outline=\"#666666\" cy:nodeTransparency=\"1.0\" cy:nodeLabelFont=\"SansSerif.bold-0-12\" cy:borderLineType=\"solid\"/>\n";
+		if(pathways)
 		{
-			//Complex-formation frames don't actually exist in PGDBs, so they will throw errors.
-			//Leave them empty of atts, but throw error if it is not a -formation frame
-			//TODO: implement a special Reaction subclass ComplexFormation that handles this more elegantly.
-			if (!ID.endsWith("-formation"))
-				throw ex;
+			HashSet<String> pwys = new HashSet<String>();
+			for(Frame pwy : getPathways())
+			{
+				pwys.add(pwy.getLocalID()+"--"+Network.removeHTML(pwy.getCommonName()));
+			}
+			ret += "\t<att type=\"string\" name=\"pathway\" value=\""+Network.ArrayList2textList(new ArrayList<String>(pwys))+"\"/>\n";
+		}
+		if(nodeAtts!=null && nodeAtts.containsKey(getLocalID()))
+		{
+			HashMap<String,ArrayList<String>> extraAtts = nodeAtts.get(getLocalID());
+			for(String name : extraAtts.keySet())
+			{
+				ret += "\t<att type=\"string\" name=\""+name+"\" value=\""+Network.ArrayList2textList(extraAtts.get(name))+"\"/>\n";
+			}
+
 		}
 	    }
 	    ret += "</node>\n";

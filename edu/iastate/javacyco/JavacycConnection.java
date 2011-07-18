@@ -2166,9 +2166,7 @@ public class JavacycConnection {
 		if(f instanceof Complex)
 		{
 			//System.out.println("HELLO");
-			String formationName = f.getLocalID()+"-formation";
-			Reaction formation = new Reaction(this,formationName);
-			formation.setCommonName(formationName);
+			ComplexFormation formation = new ComplexFormation((Complex)f);
 			net.addEdge(formation,f,Network.COMPLEX_FORMATION+"\t1\t-");
 			//net.addNode(formation);
 			for(Frame c : ((Complex)f).getComponents())

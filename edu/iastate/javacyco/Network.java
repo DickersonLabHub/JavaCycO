@@ -633,7 +633,7 @@ public class Network
 		//Handle nodes for which getPathways does not return pathway information. Reaction nodes in complex formation use the intersection of
 		//pathway information for the adjacent nodes
 		for (Frame node : nodes) {
-			if (node.ID.endsWith("-formation")) {
+			if (node instanceof ComplexFormation) {
 				//Take all pathways of the first upstream neighbor and save the intersection of the pathways of all other upstream
 				//and downstream neighbors
 				Set<Frame> intersection = new HashSet<Frame>();
