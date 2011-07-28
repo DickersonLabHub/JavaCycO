@@ -17,6 +17,7 @@ package edu.iastate.javacyco;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -538,7 +539,7 @@ public class Network
 		{
 			o = new PrintStream(new File(name+"_node_synonyms.tab"));
 		}
-		catch(Exception e)
+		catch(IOException e)
 		{
 			e.printStackTrace();
 			System.exit(0);
@@ -550,20 +551,13 @@ public class Network
 		for(Frame f : this.nodes)
 		{
 			o.print(f.getLocalID());
-			if(f.getLocalID().contains("&") && f.getLocalID().contains(";")) continue;
-			try
-			{
-				for(String s : f.getSynonyms())
-					o.print("\t"+s);
-				for(String s : f.getNames())
-					o.print("\t"+s);
-				o.print("\n");
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				System.exit(0);
-			}
+			if((f.getLocalID().contains("&") && f.getLocalID().contains(";")) || f instanceof ComplexFormation) continue;
+	
+			for(String s : f.getSynonyms())
+				o.print("\t"+s);
+			for(String s : f.getNames())
+				o.print("\t"+s);
+			o.print("\n");
 		}
 	}
 	
