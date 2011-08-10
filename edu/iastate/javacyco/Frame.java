@@ -880,7 +880,7 @@ public class Frame
 
 	public String getGML(boolean rich, boolean GMLlists, HashMap<String,ArrayList<String>> pathwayMembership, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts, HashMap<String,Integer> GMLids)
 	throws PtoolsErrorException {
-	    boolean pathways = pathwayMembership!=null && pathwayMembership.size()>0;
+	    boolean pathways = pathwayMembership!=null;
 	    String quote = GMLlists ? "" : "\"";
 	    String ret = "\tnode [\n";
 	    ret += "\t\tid "+GMLids.get(getLocalID())+"\n";
