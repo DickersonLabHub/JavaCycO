@@ -942,6 +942,7 @@ public class Frame
 	    ret += "\t<att type=\"string\" name=\"canonicalName\" value=\""+Network.removeHTML(getCommonName())+"\"/>\n";
 	    ret += "\t<att type=\"string\" name=\"label\" value=\""+Network.removeHTML(this.getCommonName())+"\"/>\n";
 	    ret += "\t<att type=\"string\" name=\"class\" value=\""+this.getGFPtype()+"\"/>\n";
+	    ret += "\t<att type=\"string\" name=\"LOCAL-ID\" value=\""+this.getLocalID()+"\"/>\n";
 	    if(rich)
 	    {
 		for(String slot : getSlots().keySet())
