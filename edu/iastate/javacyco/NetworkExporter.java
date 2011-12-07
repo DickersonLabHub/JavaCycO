@@ -91,6 +91,21 @@ public class NetworkExporter {
 		}
 	}
 	
+	/**
+	 * Refresh the cached files for all pathways of the organism.  Expects the cache to be deleted manually prior to running (ie by using "rm *.xgmml" or similar
+	 * on the files in the XGMML directory).  Should be run via commandline, rather than activated by browser due to long run time.  Be sure to update this code
+	 * match the rules for generating files in this class' main method, and be sure to update the file names in this method to match what is created in the
+	 * php script that normally calls this class to generate one pathway file at a time.
+	 * 
+	 * @author Jesse Walsh 12/7/2011
+	 * @param connection
+	 * @param org
+	 * @param format
+	 * @param mapFilename
+	 * @param mappedAttName
+	 * @throws PtoolsErrorException
+	 * @throws IOException
+	 */
 	private static void refreshCache(JavacycConnection connection, String org, String format, String mapFilename, String mappedAttName) throws PtoolsErrorException, IOException {
 		ArrayList<String> pwyNames = (ArrayList<String>)connection.allPathways();
 		int size = pwyNames.size();
