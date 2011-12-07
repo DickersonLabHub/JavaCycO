@@ -112,34 +112,40 @@ public class NetworkExporter {
 		int count = 0;
 		for (String pwyName : pwyNames) {
 			count++;
-			System.out.println("pathway " + count + "/" + size + " : " + pwyName);
-			Pathway pwy = (Pathway)Pathway.load(connection, pwyName);
-			Network net = pwy.getNetwork();
-			if(mapFilename != null)
-			{
-				BufferedReader mapFileReader = new BufferedReader(new FileReader(mapFilename));
-				String line = null;
-				HashMap<String,String> map = new HashMap<String,String>();
-				while((line=mapFileReader.readLine()) != null)
+			try {
+				System.out.print("pathway " + count + "/" + size + " : " + pwyName);
+				Pathway pwy = (Pathway)Pathway.load(connection, pwyName);
+				Network net = pwy.getNetwork();
+				if(mapFilename != null)
 				{
-					String[] lineParts = line.split("\t");
-					map.put(lineParts[0],lineParts[1]);
+					BufferedReader mapFileReader = new BufferedReader(new FileReader(mapFilename));
+					String line = null;
+					HashMap<String,String> map = new HashMap<String,String>();
+					while((line=mapFileReader.readLine()) != null)
+					{
+						String[] lineParts = line.split("\t");
+						map.put(lineParts[0],lineParts[1]);
+					}
+					net.addMappedAttribute(mappedAttName, map);
 				}
-				net.addMappedAttribute(mappedAttName, map);
+				
+				String filename = org + ":" + pwyName + ".xgmml";
+				FileOutputStream out = new FileOutputStream(filename);
+				PrintStream ps = new PrintStream(out);
+				
+				if(format.equals("gml"))
+				{
+					//net.writeGML(ps,true,true,true,true,false,true);
+				}
+				else
+				{
+					//net.writeXGMML(ps,true,true,true,true,false,true);
+				}
+			} catch (Exception e) {
+				// ignore pathway
+				System.err.print("  --  [Error in pathway, skipped]");
 			}
-			
-			String filename = org + ":" + pwyName + ".xgmml";
-			FileOutputStream out = new FileOutputStream(filename);
-			PrintStream ps = new PrintStream(out);
-			
-			if(format.equals("gml"))
-			{
-				net.writeGML(ps,true,true,true,true,false,true);
-			}
-			else
-			{
-				net.writeXGMML(ps,true,true,true,true,false,true);
-			}
+			System.out.println();
 		}
 	}
 
