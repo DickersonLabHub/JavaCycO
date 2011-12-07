@@ -6,6 +6,7 @@
 package edu.iastate.javacyco;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.io.BufferedReader;
@@ -21,7 +22,7 @@ public class NetworkExporter {
 	public static void main(String[] args) {
 		if(args.length<4)
 		{
-			System.out.println("Usage: NetworkExporter.jar SERVER PORT ORGANISM [PATHWAY|all] [gml|xgmml] [MAP_FILE [MAPPED_ATTRIBUTE_NAME]]");
+			System.out.println("Usage: NetworkExporter.jar SERVER PORT ORGANISM [PATHWAY|all|refreshCache] [gml|xgmml] [MAP_FILE [MAPPED_ATTRIBUTE_NAME]]");
 			System.exit(0);
 		}
 		String server = args[0];
@@ -55,6 +56,9 @@ public class NetworkExporter {
 				connection.writeReactionNeighbors(new PrintStream(new FileOutputStream(connection.getOrganismID()+"_reaction_ORGS.tab")), "***PATHWAYS\t");
 				//connection.writeReactions(new PrintStream(new FileOutputStream(connection.getOrganismID()+"_reactions")), "***PATHWAYS\t");
 			}
+			else if (pathway.equals("refreshCache")) {
+				refreshCache(connection, org, format, mapFilename, mappedAttName);
+			}
 			else
 			{
 				Pathway pwy = (Pathway)Pathway.load(connection, pathway);
@@ -84,6 +88,43 @@ public class NetworkExporter {
 		catch(Exception ex)
 		{
 			ex.printStackTrace();
+		}
+	}
+	
+	private static void refreshCache(JavacycConnection connection, String org, String format, String mapFilename, String mappedAttName) throws PtoolsErrorException, IOException {
+		ArrayList<String> pwyNames = (ArrayList<String>)connection.allPathways();
+		int size = pwyNames.size();
+		int count = 0;
+		for (String pwyName : pwyNames) {
+			count++;
+			System.out.println("pathway " + count + "/" + size + " : " + pwyName);
+			Pathway pwy = (Pathway)Pathway.load(connection, pwyName);
+			Network net = pwy.getNetwork();
+			if(mapFilename != null)
+			{
+				BufferedReader mapFileReader = new BufferedReader(new FileReader(mapFilename));
+				String line = null;
+				HashMap<String,String> map = new HashMap<String,String>();
+				while((line=mapFileReader.readLine()) != null)
+				{
+					String[] lineParts = line.split("\t");
+					map.put(lineParts[0],lineParts[1]);
+				}
+				net.addMappedAttribute(mappedAttName, map);
+			}
+			
+			String filename = org + ":" + pwyName + ".xgmml";
+			FileOutputStream out = new FileOutputStream(filename);
+			PrintStream ps = new PrintStream(out);
+			
+			if(format.equals("gml"))
+			{
+				net.writeGML(ps,true,true,true,true,false,true);
+			}
+			else
+			{
+				net.writeXGMML(ps,true,true,true,true,false,true);
+			}
 		}
 	}
 
