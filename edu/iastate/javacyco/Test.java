@@ -1,4 +1,16 @@
 package edu.iastate.javacyco;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Savepoint;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeSet;
+
+
 /**
  *  This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -15,204 +27,159 @@ package edu.iastate.javacyco;
  */
 
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.TreeMap;
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
-
 public class Test {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
+	@SuppressWarnings("static-access")
+	public static void main(String[] args) {
+//		JavacycConnection connection = new JavacycConnection("tht.vrac.iastate.edu",4444);
+//		connection.selectOrganism("ECOLI");
+		
+//		JavacycConnection connection = new JavacycConnection("localhost",4444);
+//		connection.selectOrganism("MAIZE");
+		
+		JavacycConnection connection = new JavacycConnection("localhost",4444);
+		connection.selectOrganism("CBIRC");
+		try {
+			
+			//updateFrame(connection);
+			
+//			Frame frame = Frame.load(connection, "|Proteins|");
+//			Frame frame = Frame.load(connection, "|Peptides|");
+			Frame frame = Frame.load(connection, "GLC-6-P");
+			frame.print();
+//			for (Frame f : frame.getDirectSuperClasses()) {
+//				System.out.println(frame.getLocalID());
+//			}
+//			for (Object f : connection.callFuncArray("get-class-all-supers '" + frame.getLocalID())) {
+//				System.out.println(f.toString());
+//			}
+//			for (Object f : connection.callFuncArray("get-class-direct-supers '" + frame.getLocalID())) {
+//				System.out.println(f.toString());
+//			}
+			
+			
+			// Create a frame to have multiple inheritance
+//			Frame frame = Frame.load(connection, "EG10700");
+//			frame.print();
+//			ArrayList test = new ArrayList();
+//			test.add("TestValue");
+//			frame.putLocalSlotValueAnnotations("LEFT-END-POSITION", "1804394", "TEST", test);
+//			frame.commit();
+//			frame.print();
+//			ArrayList<String> types = new ArrayList<String>();
+//			types.add("BC-1.1.1");
+//			types.add("BC-7.1");
+//			types.add("|Publications|");
+//			connection.callFuncArray("put-instance-types '" + frame.getLocalID() + " '" + connection.ArrayList2LispList(types));
+//			frame.print();
 
-		if(args.length!=3)
-		{
-			System.out.println("Usage: java -jar BioCyc2GML.jar SERVERNAME PORT ORGANISM");
-			System.exit(0);
+			
+			
+			
+			// Where are citations stored (EcoCyc)
+//			ArrayList<String> fs = connection.getClassAllInstances("|Publications|");
+//			for (String f : fs) {
+//				Frame frame = Frame.load(connection, f);
+//				System.out.println(frame.getSlotValue("PUBMED-ID"));
+//				try {
+//					if (frame.getSlotValue("PUBMED-ID").toString().equalsIgnoreCase("\"6235149\"")) frame.print();
+//				} catch (Exception e) {
+//					//ignore
+//				}
+//			}
+			
+			
+			
+			
+			// Gathering GO terms for MaizeGDB group
+//			System.out.println("Genes\tProteinID\tProteinCommonName\tGO-TERMS");
+//			ArrayList<String> proteinNames = connection.getClassAllInstances("|Polypeptides|");
+//			for (String proteinName : proteinNames) {
+//				String evidence = "";
+//				Frame protein = Frame.load(connection, proteinName);
+//				for (Object value : protein.getSlotValues("GO-TERMS")) {
+//					String goTerm = value.toString();
+//					evidence += goTerm + ":" + protein.getAnnotation("GO-TERMS", goTerm, "CITATIONS") + "\t";
+//				}
+//				System.out.println(protein.getSlotValues("GENE").toString() + "\t" + protein.getLocalID() + "\t" + protein.getCommonName() + "\t" + evidence);
+//			}
+			
 		}
-		
-		String server = args[0];
-		Integer port = Integer.parseInt(args[1]);
-		String org = args[2];
-		
-		JavacycConnection connection = new JavacycConnection(server,port);//"vitis.student.iastate.edu",4444);
-		
-		connection.selectOrganism(org);
-		try
-		{
-			
-			//Frame.load(connection, "RXN90W-231").print();
-//			for(Frame f : connection.getAllGFPInstances(Pathway.GFPtype)) f.deleteFromKB();
-//			for(Frame f : connection.getAllGFPInstances(Reaction.GFPtype)) f.deleteFromKB();
-//			for(Frame f : connection.getAllGFPInstances(Catalysis.GFPtype)) f.deleteFromKB();
-//			for(Frame f : connection.getAllGFPInstances(Monomer.GFPtype)) f.deleteFromKB();
-//			for(Frame f : connection.getAllGFPInstances(Gene.GFPtype)) f.deleteFromKB();
-			
-//			HashMap<String,String> map = connection.getPathwayOntology(false);
-//			for(String key : map.keySet())
-//			{
-//				System.out.println(key+"\t"+map.get(key));
-//			}
-//			for(OrgStruct org : connection.allOrgs())
-//			{
-//				System.out.println(org.getLocalID());
-//			}
-			
-//			Network net = new Network("all_pathways_net");
-//			for(Pathway p : Pathway.all(connection)) net.importNetwork(p.getNetwork());
-//			net.printTab();
-			
-//			TreeSet<String> geneAccs = new TreeSet<String>();// {"AT5G36290","AT5G62000","AT5G58330","AT5G66240","AT5G64200"};
-//			BufferedReader input =  new BufferedReader(new FileReader("/home/jlv/Desktop/plex/integration_grant_proposal/AS_example_genes.txt"));
-//			String line = null; //not declared within while loop
-//			while (( line = input.readLine()) != null){
-//				geneAccs.add(line);
-//			}
-//			ArrayList<Frame> genes = connection.getAllGFPInstances(Gene.GFPtype);
-//			HashMap<String,Frame> genesMap = new HashMap<String,Frame>();
-//			for(Frame f : genes)
-//			{
-//				genesMap.put(f.ID,f);
-//			}
-//			System.out.println("geneMap loaded");
-//			TreeMap<String,TreeSet<String>> pwys = new TreeMap<String,TreeSet<String>>();
-//			HashMap<String,Pathway> pwysMap = new HashMap<String,Pathway>();
-//			for(String geneAcc : geneAccs)
-//			{
-//				if(genesMap.containsKey(geneAcc))
-//				{
-//					Gene g = (Gene)(genesMap.get(geneAcc));
-//					
-//					for(Frame f : g.getPathways())
-//					{
-//						if(!pwys.containsKey(f.getCommonName())) pwys.put(f.getCommonName(),new TreeSet<String>());
-//						pwys.get(f.getCommonName()).add(g.ID);
-//						pwysMap.put(f.getCommonName(),(Pathway)f);
-//					}
-//				}
-//			}
-//			Network net = new Network("AS_example_net");
-//			for(String pwy : pwys.keySet())
-//			{
-//				String list = "";
-//				for(String gene : pwys.get(pwy)) 
-//				{
-//					list += gene+";";
-//				}
-//				System.out.println(pwy+"\t"+pwys.get(pwy).size()+"\t"+list);
-//				if(pwys.get(pwy).size() > 5)
-//				{
-//					Network pnet = pwysMap.get(pwy).getNetwork();
-//					net.importNetwork(pnet);
-//					pnet.printTab();
-//				}
-//			}
-//			net.printTab();
-			
-
-			//((Pathway)Pathway.load(connection,"PYRUVDEHYD-PWY")).getNetwork().writeGML(new PrintStream(new FileOutputStream("ECOCYC.gml")),true,true,true,false);
-			
-			
-//			for(Frame f : connection.getAllGFPInstances(Regulation.GFPtype))
-//			{
-//				Regulation reg = (Regulation)f;
-//				Boolean rel = reg.getMode();
-//				String rels = "";
-//				if(rel==null) rels = "?";
-//				else if(rel) rels = "+";
-//				else rels = "-";
-//				System.out.println(reg.getRegulator().getCommonName()+" "+rels+" "+reg.getRegulatee().getCommonName());
-//			}
-			
-			//connection.writeReactionNeighbors(System.out,"");
-			
-//			Frame.load(connection,"AK221689").print();
-//			Frame.load(connection,"ENZRXN8TU-3017").print();
-//			Frame.load(connection,"ENZRXN8TU-614").print();
-			//for(Frame f : Frame.load(connection,"L-1-PHOSPHATIDYL-ETHANOLAMINE").getPathways())
-			//	System.out.println(f.getLocalID()+"::"+f.getCommonName());
-
-			//Network net = ((Pathway)Frame.load(connection,(String)(connection.allPathways().get(0)))).getNetwork();
-//			Network net = ((Pathway)Frame.load(connection,"PWY-6213")).getNetwork();
-//			net.writeGML(new PrintStream(System.out),true,true,true,false);
-//			
-			Network net = connection.getNetwork();
-			
-			net.writeGML(new PrintStream(new FileOutputStream(connection.getOrganismID()+".gml")),true,true,true,false,true,true);
-			net.writeGML(new PrintStream(new FileOutputStream(connection.getOrganismID()+"_basic_unweighted_undirected.gml")),false,false,false,true,true,true);
-			net.writeGML(new PrintStream(new FileOutputStream(connection.getOrganismID()+"_basic_weighted_undirected.gml")),false,true,false,true,true,true);
-			net.writeGML(new PrintStream(new FileOutputStream(connection.getOrganismID()+"_basic_unweighted_directed.gml")),false,false,true,true,true,true);
-			net.writeGML(new PrintStream(new FileOutputStream(connection.getOrganismID()+"_basic_weighted_directed.gml")),false,true,true,true,true,true);
-			net.printGeneAltIDs();
-			net.printSynonyms();
-			connection.writeReactionNeighbors(new PrintStream(new FileOutputStream(connection.getOrganismID()+"_reactionNeighbors.tab")), "***PATHWAYS\t");
-			connection.writeReactions(new PrintStream(new FileOutputStream(connection.getOrganismID()+"reactions")), "***PATHWAYS\t");
-			
-			
-//			for(Frame f : connection.getAllGFPInstances(Gene.GFPtype))
-//			{
-//				//Regulation reg = (Regulation)f;
-//				//System.out.println((reg.getRegulator()==null ? null : (reg.getRegulator().getCommonName()+"("+reg.getRegulator().getClass().getName()+")"))+"\t"+(reg.getRegulatee()==null ? null : (reg.getRegulatee().getCommonName()+"("+reg.getRegulatee().getClass().getName()+")")));
-//				Gene g = (Gene)f;
-//				
-//				int a = g.getRegulatingGenes().size();
-//				int b = g.getRegulatedGenes().size();
-//				if(a>0 || b>0) System.out.println(a+"\t"+b);
-//			}
-			
-//			System.out.println(((Gene)Frame.load(connection,"EG11017")).getECK());
-//			((Gene)Frame.load(connection,"AT3G54990")).print();
-//			((Gene)Frame.load(connection,"EG11017")).getTranscriptionUnits().get(0).print();
-//			
-//			REVERSIBLE	47
-//			LEFT-TO-RIGHT	1235
-//			RIGHT-TO-LEFT	123
-		}
-		catch(Exception e)
-		{
+		catch(Exception e) {
 			e.printStackTrace();
 			System.out.println("Caught a "+e.getClass().getName()+". Shutting down...");
 		}
-		finally
-		{
+		finally {
 			connection.close();
 		}
-		
 	}
 	
-	private static void putChildren(OntologyTerm ont,String tabs) throws PtoolsErrorException
-	{
-		if(ont.getChildren().size()>=0)
-		{
-			System.out.println(tabs+ont.getChildren().size()+" - "+ ont.getCommonName() + " / "+ont.getLocalID());
-			for(OntologyTerm child : ont.getChildren())
-			{
-				putChildren(child,tabs+"  ");
+	public void submitItem(String fileName) {
+		File tfLinks = new File(fileName);
+		BufferedReader reader = null;
+		
+		try {
+			reader = new BufferedReader(new FileReader(tfLinks));
+			String text = null;
+			
+			// Ignore Headers
+			reader.readLine();
+			
+			while ((text = reader.readLine()) != null) {
+				String[] line = text.split("\t");
+				
+//				updateFrame(connection);
 			}
-			if(ont.getChildren().size()==0)
-			{
-				for(Frame f : ont.getInstances())
-				{
-					System.out.println(tabs+"\t"+":INSTANCE - "+f.getCommonName());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				if (reader != null) {
+					reader.close();
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 	
-
-
+ 	public static void updateFrame(JavacycConnection conn) throws PtoolsErrorException {
+ 		String frameID = "EG10700";
+ 		String geneFullName = "";
+ 		String CurrentGeneModelName = "";
+ 		String goId = "";
+ 		String goTerm = "";
+ 		String goEvidenceCode = "";
+ 		String pubmedId = "";
+ 		String citation = "";
+ 		String validation = "";
+ 		
+ 		if (!conn.frameExists(frameID)) {
+ 			System.err.println("Cannot update frame " + frameID + ". Frame does not exist.");
+ 			return;
+ 		}
+ 		
+ 		Gene gene = (Gene) Gene.load(conn, frameID);
+ 		gene.print();
+ 		
+ 		gene.putSlotValue("COMMON-NAME", "Hello");
+// 		putSlotValue(slot, value);
+// 		putSlotValue(slot, value);
+// 		putSlotValue(slot, value);
+// 		putSlotValue(slot, value);
+ 		
+ 		gene.commit();
+ 		
+ 		gene.print();
+// 		"pfkB"
+ 	}
 }
