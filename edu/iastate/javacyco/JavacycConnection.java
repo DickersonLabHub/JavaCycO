@@ -2439,6 +2439,8 @@ public class JavacycConnection {
 	{
 		//System.out.println("closing connection");
 		closeSocket();
+		this.server = "";
+		this.port = 0;
 		if(waits.size()>0)
 		{
 			System.out.println("\nWait time ("+waits.size()+" queries):");
