@@ -285,7 +285,7 @@ public class Reaction extends Frame
 	public void addReactant(Frame f,int coef)
 	throws PtoolsErrorException {
 		this.addSlotValue("LEFT",f.getLocalID());
-		this.putLocalSlotValueAnnotations("LEFT", f.getLocalID(), "COEFFICIENT", coef+"");
+		this.putLocalSlotValueAnnotation("LEFT", f.getLocalID(), "COEFFICIENT", coef+"");
 		this.addSlotValue("SUBSTRATES",f.getLocalID());
 	}
 	
@@ -296,7 +296,7 @@ public class Reaction extends Frame
 	public void addProduct(Frame f,int coef)
 	throws PtoolsErrorException {
 		this.addSlotValue("RIGHT",f.getLocalID());
-		this.putLocalSlotValueAnnotations("RIGHT", f.getLocalID(), "COEFFICIENT", coef+"");
+		this.putLocalSlotValueAnnotation("RIGHT", f.getLocalID(), "COEFFICIENT", coef+"");
 		this.addSlotValue("SUBSTRATES",f.getLocalID());
 	}
 	
