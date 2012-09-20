@@ -673,6 +673,31 @@ public class JavacycConnection {
 	    return rst;
     }
     
+    /**
+     * 
+     * @param classFrame
+     * @return
+     * @throws PtoolsErrorException
+     * @author Jesse
+     */
+    public ArrayList getClassAllSupers(String classFrame) throws PtoolsErrorException {
+    	ArrayList rst = new ArrayList();
+   		rst = callFuncArray("get-class-all-supers '" + classFrame);
+   		return rst;
+    }
+    
+    /**
+     * 
+     * @param classFrame
+     * @return
+     * @throws PtoolsErrorException
+     * @author Jesse
+     */
+    public ArrayList getClassDirectSupers(String classFrame) throws PtoolsErrorException {
+    	ArrayList rst = new ArrayList();
+   		rst = callFuncArray("get-class-direct-supers '" + classFrame);
+   		return rst;
+    }
 
 
     /**
@@ -1499,6 +1524,19 @@ public class JavacycConnection {
     {
 	    return callFuncString(func,true);
     }
+    
+    /**
+     * Calls a function which causes Pathway Tools to download information for the given GO Terms, automatically creating
+     * new frames for to store the information. This step is automatic when using the pathway tools editor
+     * directly, but must be called manually when GO Term information is changed through JavaCycO
+     * @param goTerms
+     * @return
+     * @throws PtoolsErrorException
+     * @author Jesse
+     */
+    public String importGOTerms(ArrayList goTerms) throws PtoolsErrorException {
+    	return callFuncString("import-go-terms '" + ArrayList2LispList(goTerms));
+    }
 
     private String wrapStringQuery(String func)
     {
@@ -2316,6 +2354,17 @@ public class JavacycConnection {
 			}
 			System.out.println("~DIRECT GFP SUPERCLASSES: ");
 			for(Object t : this.getInstanceDirectTypes(id))
+			{
+				System.out.println("\t"+(String)t);
+			}
+		} else {
+			System.out.println("~~THE FOLLOWING ARE NOT SLOTS~~\n~GFP SUPERCLASSES: ");
+			for(Object t : this.getClassAllSupers(id))
+			{
+				System.out.println("\t"+(String)t);
+			}
+			System.out.println("~DIRECT GFP SUPERCLASSES: ");
+			for(Object t : this.getClassDirectSupers(id))
 			{
 				System.out.println("\t"+(String)t);
 			}
