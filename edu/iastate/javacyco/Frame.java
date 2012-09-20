@@ -143,8 +143,13 @@ public class Frame
 	@return The value of the annotation annotName where slotValue falls in slotName for this Frame
 	*/
 	public String getAnnotation(String slotName,String slotValue,String annotName)
-	throws PtoolsErrorException {
-		return conn.getValueAnnot(ID, slotName, slotValue, annotName);
+		throws PtoolsErrorException {
+			return conn.getValueAnnot(ID, slotName, slotValue, annotName);
+	}
+	
+	public ArrayList getAnnotations(String slotName,String slotValue,String annotName)
+		throws PtoolsErrorException {
+			return conn.getValueAnnots(ID, slotName, slotValue, annotName);
 	}
 	
 	protected void loadAnnotations(Frame parent,String parentSlot) throws PtoolsErrorException
@@ -387,6 +392,20 @@ public class Frame
 		ArrayList al = new ArrayList();
 		al.add(value);
 		this.putSlotValues(slot,al);
+	}
+	
+	public void putLocalSlotValueAnnotation(String slotName,String slotValue,String annotationLabel,String annotationValue)
+	{
+		this.putLocalSlotValueAnnotations(slotName, slotValue, annotationLabel, new ArrayList(Arrays.asList(new String[] {annotationValue})));
+	}
+	
+	public void putLocalSlotValueAnnotations(String slotName, String slotValue, String annotationLabel, ArrayList annotationValues)
+	{
+		if(!this.slotValueAnnotations.containsKey(slotName))
+			this.slotValueAnnotations.put(slotName, new HashMap<String,HashMap<String,ArrayList>>());
+		if(!this.slotValueAnnotations.get(slotName).containsKey(slotValue))
+			this.slotValueAnnotations.get(slotName).put(slotValue,new HashMap<String,ArrayList>());
+		this.slotValueAnnotations.get(slotName).get(slotValue).put(annotationLabel, annotationValues);
 	}
 	
 	/**
@@ -738,16 +757,6 @@ public class Frame
 			this.slotValueAnnotations.put(slotName,valueAnnots);
 	}
 	
-	protected void putLocalSlotValueAnnotations(String slotName,String value,String label,String annotValue)
-	{
-		if(!this.slotValueAnnotations.containsKey(slotName))
-			this.slotValueAnnotations.put(slotName, new HashMap<String,HashMap<String,ArrayList>>());
-		if(!this.slotValueAnnotations.get(slotName).containsKey(value))
-			this.slotValueAnnotations.get(slotName).put(value,new HashMap<String,ArrayList>());
-		this.slotValueAnnotations.get(slotName).get(value).put(label, new ArrayList(Arrays.asList(new String[] {annotValue})));
-	}
-	
-
 	/**
 	Check if the PGDB Frame with the specified id has the specified class name somewhere it its PGDB superclasses.
 	@param c the connection to use
@@ -976,6 +985,5 @@ public class Frame
 	    ret += "</node>\n";
 	    return ret;
 	}
-
 
 }
