@@ -2002,7 +2002,7 @@ public class JavacycConnection {
 					ArrayList<String> annots = this.getAllAnnotLabels(item, slotName, (String)slotValue);
 					for(String annotName : annots)
 					{
-						System.out.println("\t\t--"+annotName+"\t"+this.getValueAnnot(item, slotName, (String)slotValue, annotName));
+						System.out.println("\t\t--"+annotName+"\t"+this.getValueAnnots(item, slotName, (String)slotValue, annotName));
 					}
 				}
 				else
