@@ -497,7 +497,34 @@ public class Frame
 					{
 						conn.putSlotValues(ID,key,JavacycConnection.ArrayList2LispList(local));
 					}
-					//this.commitAnnotations(key);
+					this.commitAnnotations(key,slots.get(key));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param slotLabel
+	 * @param slotValues
+	 * @author Jesse Walsh
+	 * @throws PtoolsErrorException 
+	 */
+	private void commitAnnotations(String slotLabel, ArrayList slotValues) throws PtoolsErrorException {
+		if (slotValueAnnotations == null || slotValueAnnotations.get(slotLabel) == null) return;
+		
+		for (Object value : slotValues) {
+			String slotValue = (String) value;
+			if (slotValueAnnotations.get(slotLabel).get(slotValue) != null) {
+				Iterator<String> iter = slotValueAnnotations.get(slotLabel).get(slotValue).keySet().iterator();
+				String key,valueList;
+				ArrayList annotValues,inDB;
+				while(iter.hasNext()) {
+					key = iter.next();
+					if(slotValueAnnotations.get(slotLabel).get(slotValue).get(key) != null) {
+						annotValues = slotValueAnnotations.get(slotLabel).get(slotValue).get(key);
+						conn.putAnnotations(ID, slotLabel, slotValue, key, annotValues);
+					}
 				}
 			}
 		}
@@ -759,6 +786,10 @@ public class Frame
 	
 	/**
 	Check if the PGDB Frame with the specified id has the specified class name somewhere it its PGDB superclasses.
+	
+	- Jesse Walsh 10/25/2012
+		Now can test class frames as well as instance frames.
+	
 	@param c the connection to use
 	@param id the id of the PGDB frame to lookup
 	@param className the name of the PGDB class to check membership for the Frame
@@ -769,6 +800,11 @@ public class Frame
 			className = "|"+className;
 		if(!className.endsWith("|"))
 			className += "|";
+		
+		try {
+			if (c.getClassAllSupers(id).contains(className)) return true;
+			if (id.replace("|", "").equalsIgnoreCase(className.replace("|", ""))) return true;
+		} catch (Exception e) { }
 		return c.getInstanceAllTypes(id).contains(className);
 	}
 	
