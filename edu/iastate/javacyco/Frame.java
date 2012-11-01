@@ -497,8 +497,8 @@ public class Frame
 					{
 						conn.putSlotValues(ID,key,JavacycConnection.ArrayList2LispList(local));
 					}
-					this.commitAnnotations(key,slots.get(key));
 				}
+				this.commitAnnotations(key,slots.get(key));
 			}
 		}
 	}
