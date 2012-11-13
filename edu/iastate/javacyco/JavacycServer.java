@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 public class JavacycServer
 {
+	private enum ConnectionState { CHALLENGE, PROCESS, CLOSE; }
 	
     private UnixDomainSocket uds; // J-BUDS Unix domain socket
     private String ptoolsSocketName; // name of the socket
@@ -35,6 +36,8 @@ public class JavacycServer
     
     private final String lispOutFileName = "lisp_out_log.txt";
     private final String lispInFileName = "lisp_in_log.txt";
+    
+    private final String passwordFileName = "auth.txt";
     
     private Boolean verbose = false;
     private Boolean log = false;
@@ -114,23 +117,44 @@ public class JavacycServer
     	{
 	    	try
 	    	{
-	    		listen(port);
+	    		if(verbose) System.out.println("Total mem: "+Runtime.getRuntime().totalMemory());
+	    		if(verbose) System.out.println("Server waiting to accept on port "+port);
+	    		clientSocket = serverSocket.accept();
+	    	    PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream(), true);
+	    	    BufferedReader fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+	        	ConnectionState state = ConnectionState.CHALLENGE;
+	        	
+	        	boolean clientDisconnect = false;
+	        	while(!clientDisconnect) {
+		    		switch (state) {
+			    		case CHALLENGE:
+			    			for (int i = 0; i < 3; i++) {
+			    				state = authenticateClient(fromClient, toClient);
+			    				if (state == ConnectionState.PROCESS) break;
+			    			}
+			    			if (state == ConnectionState.PROCESS) break;
+			    			else {
+				    			if(verbose) System.out.println("Failed to authenticate 3 times");
+				    			state = ConnectionState.CLOSE;
+				    			break;
+			    			}
+			    		case PROCESS:
+			    			state = processCommand(fromClient, toClient);
+			    			break;
+			    		case CLOSE:
+			    			if(verbose) System.out.println("Closing connection to client");
+			    			clientDisconnect = true;
+			    			toClient.println(JavacycProtocol.CLOSE_CONNECTION); toClient.flush();
+			    			break;
+		    		}
+	        	}
+	        	clientSocket.close();
 	    	} 
 	    	catch (Exception e)
 	    	{
-	    	    System.out.println("Caught exception "+e.getMessage());
-	    	    e.printStackTrace();
-	    	    
-	    	    try
-	    	    {
-	    	    	listen(port);
-	    	    }
-	    	    catch(Exception e2)
-	    	    {
-	    	    	System.out.println("Caught another exception...panicking");
-	    	    	e.printStackTrace();
-	    	    	System.exit(1);
-	    	    }
+	    		System.out.println("Caught exception...panicking");
+    	    	e.printStackTrace();
+    	    	System.exit(1);
 	    	}
     	}
 
@@ -190,9 +214,7 @@ public class JavacycServer
 		if(verbose) System.out.println("Server received query from client: "+line);
 		if(log) logStream.println(dateFormat.format(new Date())+"\t"+clientSocket.getInetAddress()+"\t"+line);
 		
-		if(line != null && line.startsWith("***"))
-		{
-			
+		if(line != null && line.startsWith("***")) {
 			String localQuery = line.substring(3);
 			String[] localQueryParts = localQuery.split(":",2);
 			String localFunction = localQueryParts[0];
@@ -245,36 +267,123 @@ public class JavacycServer
     }
 
 
-	   /**
-    Get a socket connection with Pathway Tools using a Unix domain
-    socket.
- */
- private void makeSocket() {
-	try {
-	    // Create socket and connect to the server
-	    uds = new UnixDomainSocket(ptoolsSocketName);
-	    out = new PrintWriter(uds.getOutputStream(), true);
-	    in = new BufferedReader(
-				    new InputStreamReader(uds.getInputStream()));
-	} catch (IOException e) { 
-	    e.printStackTrace();
-	    throw new RuntimeException(); 
-	}
- }
+	 /**
+    	Get a socket connection with Pathway Tools using a Unix domain
+    	socket.
+	 */
+	 private void makeSocket() {
+		try {
+		    // Create socket and connect to the server
+		    uds = new UnixDomainSocket(ptoolsSocketName);
+		    out = new PrintWriter(uds.getOutputStream(), true);
+		    in = new BufferedReader(
+					    new InputStreamReader(uds.getInputStream()));
+		} catch (IOException e) { 
+		    e.printStackTrace();
+		    throw new RuntimeException(); 
+		}
+	 }
 
- /**
-    Close the socket connection with Pathway Tools.
-    @throws IOException if the socket connection cannot be closed
- */
- private void closeSocket() {
-	try {
-	    uds.close();
-	    out.close();
-	    in.close();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	    throw new RuntimeException(); 
-	}
- }
+	 /**
+	    Close the socket connection with Pathway Tools.
+	    @throws IOException if the socket connection cannot be closed
+	 */
+	 private void closeSocket() {
+		try {
+		    uds.close();
+		    out.close();
+		    in.close();
+		} catch (IOException e) {
+		    e.printStackTrace();
+		    throw new RuntimeException(); 
+		}
+	 }
     
+ 	private ConnectionState processCommand(BufferedReader fromClient, PrintWriter toClient) throws Exception {
+ 		if(verbose) System.out.println("Total mem: "+Runtime.getRuntime().totalMemory());
+		if(verbose) System.out.println("Server reading query line from client "+clientSocket.getInetAddress());
+		String line = fromClient.readLine();
+		if(verbose) System.out.println("Server received query from client: "+line);
+		if(log) logStream.println(dateFormat.format(new Date())+"\t"+clientSocket.getInetAddress()+"\t"+line);
+		
+		if (line != null && line.startsWith(JavacycProtocol.CLOSE_CONNECTION)) {
+			return ConnectionState.CLOSE;
+		} else if(line != null && line.startsWith("***")) {
+			String localQuery = line.substring(3);
+			String[] localQueryParts = localQuery.split(":",2);
+			String localFunction = localQueryParts[0];
+			String[] localFunctionParams = localQueryParts.length>1 ? localQueryParts[1].split(",") : null;
+			if(localFunction.equals("PO"))
+			{
+				String org = localFunctionParams[0];
+				if(!org.equals(localConnection.getOrganismID()))
+					localConnection.selectOrganism(org);
+				ArrayList<String> pairs = new ArrayList<String>();
+				LinkedHashMap<String,String> classMap = localConnection.getPathwayOntology(true);
+				toClient.println("(");
+				for(String key : classMap.keySet())
+				{
+					String s = "\""+key+":"+classMap.get(key)+"\"";
+					pairs.add(s);
+					System.out.println(s);
+					toClient.println(s);
+				}
+				toClient.println(")");
+
+//				String resp = JavacycConnection.ArrayList2LispList(pairs);
+//				if(verbose) System.out.println("Response for server side query: "+resp);
+//				toClient.println(resp);
+			}
+		}
+		else
+		{
+			makeSocket();
+			if(verbose) System.out.println("Server writing query line to ptools socket");
+			out.println(line);
+			if(log) lispOut.println(line);
+			
+			int i=0;
+			if(verbose) System.out.println("Server reading response line "+i+" from ptools socket");
+			line = in.readLine();
+	
+			while(line != null)
+			{
+				if(verbose) System.out.println("Server writing response line "+i+" to client: "+line);
+				if(log) lispIn.println(line);
+				toClient.println(line);
+				i++;
+				if(verbose) System.out.println("Server reading response line "+i+" from ptools socket");
+				line = in.readLine();
+			}
+			closeSocket();
+		}
+		return ConnectionState.CLOSE;
+ 	}
+ 	
+ 	private ConnectionState authenticateClient(BufferedReader fromClient, PrintWriter toClient) throws IOException {
+ 		if(verbose) System.out.println("Attempting to authenticate client");
+ 		String user, pw;
+ 		if(verbose) System.out.println("Requesting user name");
+ 		toClient.println(JavacycProtocol.REQUEST_USERNAME); toClient.flush();
+ 		user = fromClient.readLine();
+ 		if(verbose) System.out.println("Requesting password");
+ 		toClient.println(JavacycProtocol.REQUEST_PASSWORD); toClient.flush();
+ 		pw = fromClient.readLine();
+ 		
+ 		if (validUser(user, pw)) {
+ 			if(verbose) System.out.println("Authentication successful");
+ 			toClient.println(JavacycProtocol.LOGIN_SUCCESS); toClient.flush();
+ 			return ConnectionState.PROCESS;
+ 		} else {
+ 			if(verbose) System.out.println("Authentication failed");
+ 			toClient.println(JavacycProtocol.LOGIN_FAIL); toClient.flush();
+ 			return ConnectionState.CHALLENGE;
+ 		}
+ 	}
+ 	
+ 	//TODO
+ 	private boolean validUser(String user, String password) {
+ 		if (user.equalsIgnoreCase("me") && password.equalsIgnoreCase("pass")) return true;
+ 		else return false;
+ 	}
 }

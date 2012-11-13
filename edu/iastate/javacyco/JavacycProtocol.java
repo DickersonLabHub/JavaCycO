@@ -1,14 +1,10 @@
 package edu.iastate.javacyco;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
-
-
-
-
 
 public class JavacycProtocol
 {
@@ -16,6 +12,12 @@ public class JavacycProtocol
     private String ptoolsSocketName; // name of the socket
     private PrintWriter out; // output to the Pathway Tools server
     private BufferedReader in; // input from the Pathway Tools server
+    
+    final static String REQUEST_USERNAME = "USER";
+    final static String REQUEST_PASSWORD = "PASSWORD";
+    final static String LOGIN_SUCCESS = "LOGIN_SUCCESS";
+    final static String LOGIN_FAIL = "LOGIN_FAIL";
+    final static String CLOSE_CONNECTION = "CLOSE";
     
 	public JavacycProtocol()
 	{

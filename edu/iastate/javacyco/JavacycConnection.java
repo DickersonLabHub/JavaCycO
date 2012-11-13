@@ -137,8 +137,12 @@ public class JavacycConnection {
     		try
     		{
     			socket = new Socket(server,port);
+    			socket.setSoTimeout(1000);
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				out = new PrintWriter(socket.getOutputStream(),true);
+				if (!login()) {
+	    			throw new RuntimeException("Problem logging in to remote server");
+				}
     		}
     		catch(Exception e)
     		{
@@ -2451,6 +2455,30 @@ public class JavacycConnection {
 			System.out.println("SD: "+Math.sqrt(var(waits))+"ms");
 		}
 		System.out.println(cacheHits+" cache hits");
+	}
+	
+	private boolean login() {
+		try {
+			String line;
+			while ((line = in.readLine()) != null) {
+				if (line.equalsIgnoreCase(JavacycProtocol.REQUEST_USERNAME)) {
+					out.println("me");//out.println(userName);
+				} else if (line.equalsIgnoreCase(JavacycProtocol.REQUEST_PASSWORD)) {
+					out.println("pass");//out.println(password);
+				} else if (line.equalsIgnoreCase(JavacycProtocol.LOGIN_SUCCESS)) {
+					return true;
+				} else if (line.equalsIgnoreCase(JavacycProtocol.LOGIN_FAIL)) {
+					return false;
+				} else {
+					System.err.println("Error while logging in, server failed to follow protocol.");
+					return false;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.err.println("Error while logging in, server failed to respond.");
+		return false;
 	}
 	
 	private long min(ArrayList<Long> a)
