@@ -39,6 +39,8 @@ public class JavacycConnection {
 	private String server;
 	private int port;
 	private Socket socket;
+	private String user;
+	private String password;
 	
     private UnixDomainSocket uds; // J-BUDS Unix domain socket
     private String socketName; // name of the socket
@@ -102,6 +104,16 @@ public class JavacycConnection {
     	this.remote = true;
     	this.server = server;
     	this.port = port;
+    	commonSetup();
+    }
+    
+    public JavacycConnection(String server, int port, String user, String password)
+    {
+    	this.remote = true;
+    	this.server = server;
+    	this.port = port;
+    	this.user = user;
+    	this.password = password;
     	commonSetup();
     }
     
@@ -2462,9 +2474,17 @@ public class JavacycConnection {
 			String line;
 			while ((line = in.readLine()) != null) {
 				if (line.equalsIgnoreCase(JavacycProtocol.REQUEST_USERNAME)) {
-					out.println("me");//out.println(userName);
+					if (user == null || user.equals("")) {
+						System.err.println("Authorization required to access server: username not provided");
+						return false;
+					}
+					out.println(user);
 				} else if (line.equalsIgnoreCase(JavacycProtocol.REQUEST_PASSWORD)) {
-					out.println("pass");//out.println(password);
+					if (password == null || password.equals("")) {
+						System.err.println("Authorization required to access server: password not provided");
+						return false;
+					}
+					out.println(password);
 				} else if (line.equalsIgnoreCase(JavacycProtocol.LOGIN_SUCCESS)) {
 					return true;
 				} else if (line.equalsIgnoreCase(JavacycProtocol.LOGIN_FAIL)) {

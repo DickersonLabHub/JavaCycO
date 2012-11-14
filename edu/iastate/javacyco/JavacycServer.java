@@ -1,5 +1,7 @@
 package edu.iastate.javacyco;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -37,7 +39,7 @@ public class JavacycServer
     private final String lispOutFileName = "lisp_out_log.txt";
     private final String lispInFileName = "lisp_in_log.txt";
     
-    private final String passwordFileName = "auth.txt";
+    private final String authFileName = "user.auth";
     
     private Boolean verbose = false;
     private Boolean log = false;
@@ -381,9 +383,39 @@ public class JavacycServer
  		}
  	}
  	
- 	//TODO
  	private boolean validUser(String user, String password) {
- 		if (user.equalsIgnoreCase("me") && password.equalsIgnoreCase("pass")) return true;
+ 		if (user == null || user.equals("")) return false;
+ 		String userPassword = getUserPassword(user);
+ 		if (userPassword == null) return false;
+ 		if (password.equals(userPassword)) return true;
  		else return false;
+ 	}
+ 	
+ 	private String getUserPassword(String user) {
+ 		BufferedReader br = null;
+ 		try {
+ 			br = new BufferedReader(new FileReader(authFileName));
+ 			String line;
+			while ((line = br.readLine()) != null) {
+				String[] entry = line.split(",");
+				if (entry[0].equals(user)) {
+					return entry[1];
+				}
+			}
+ 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
  	}
 }
