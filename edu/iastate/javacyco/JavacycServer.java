@@ -39,7 +39,7 @@ public class JavacycServer
     private final String lispOutFileName = "lisp_out_log.txt";
     private final String lispInFileName = "lisp_in_log.txt";
     
-    private final String authFileName = "user.auth";
+    private String authFile = "";
     
     private Boolean verbose = false;
     private Boolean log = false;
@@ -70,7 +70,7 @@ public class JavacycServer
         		System.out.println("REQUIRES javacyc.jar and\n" +
         				"JNI compilation of UnixDomainSocket_UnixDomainSocket.c to libunixdomainsocket.so (use javacyc.jar/compile_native_socket.sh)\n" +
         				"Must run on Linux\n" +
-        				"Usage: java -Djava.library.path=path/to/libunixdomainsocket.so -cp path/to/javacyc.jar -jar JavacycServer.jar [-port PORTNUMBER (default: 4444)] [-verbose] [-log]");
+        				"Usage: java -Djava.library.path=path/to/libunixdomainsocket.so -cp path/to/javacyc.jar -jar JavacycServer.jar [-port PORTNUMBER (default: 4444)] [-verbose] [-log] [-authFile authFileLocation]");
         		System.exit(1);
         	}
     		if(args[i].equals("-verbose"))
@@ -81,6 +81,8 @@ public class JavacycServer
     		}
     		else if(args[i].equals("-port"))
     			port = Integer.parseInt(args[i+1]);
+    		else if (args[i].equals("-authFile"))
+    			authFile = args[i+1];
     	}
 
     	if(verbose) System.out.println("verbose mode");
@@ -124,7 +126,12 @@ public class JavacycServer
 	    		clientSocket = serverSocket.accept();
 	    	    PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream(), true);
 	    	    BufferedReader fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-	        	ConnectionState state = ConnectionState.CHALLENGE;
+	        	
+	    	    ConnectionState state;
+	    	    if (authFile.equals(""))
+	    	    	state = ConnectionState.PROCESS;
+	    	    else
+	    	    	state = ConnectionState.CHALLENGE;
 	        	
 	        	boolean clientDisconnect = false;
 	        	while(!clientDisconnect) {
@@ -394,7 +401,7 @@ public class JavacycServer
  	private String getUserPassword(String user) {
  		BufferedReader br = null;
  		try {
- 			br = new BufferedReader(new FileReader(authFileName));
+ 			br = new BufferedReader(new FileReader(authFile));
  			String line;
 			while ((line = br.readLine()) != null) {
 				String[] entry = line.split(",");

@@ -41,6 +41,7 @@ public class JavacycConnection {
 	private Socket socket;
 	private String user;
 	private String password;
+	private boolean useLogin;
 	
     private UnixDomainSocket uds; // J-BUDS Unix domain socket
     private String socketName; // name of the socket
@@ -104,6 +105,7 @@ public class JavacycConnection {
     	this.remote = true;
     	this.server = server;
     	this.port = port;
+    	this.useLogin = false;
     	commonSetup();
     }
     
@@ -114,6 +116,7 @@ public class JavacycConnection {
     	this.port = port;
     	this.user = user;
     	this.password = password;
+    	this.useLogin = true;
     	commonSetup();
     }
     
@@ -149,11 +152,11 @@ public class JavacycConnection {
     		try
     		{
     			socket = new Socket(server,port);
-    			socket.setSoTimeout(1000);
+    			socket.setSoTimeout(10000);
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				out = new PrintWriter(socket.getOutputStream(),true);
-				if (!login()) {
-	    			throw new RuntimeException("Problem logging in to remote server");
+				if (useLogin) {
+					if (!login()) throw new RuntimeException("Problem logging in to remote server");
 				}
     		}
     		catch(Exception e)
