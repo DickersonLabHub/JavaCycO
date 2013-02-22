@@ -21,6 +21,7 @@ import java.util.ArrayList;
 A Reaction catalyzed by an enzyme.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public class EnzymeReaction extends Reaction
 {
 	/**

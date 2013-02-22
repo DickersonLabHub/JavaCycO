@@ -15,8 +15,6 @@ package edu.iastate.javacyco;
  */
 
 
-import java.io.File;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +32,7 @@ out to simple class methods.
 Of course, you can also work at any point in-between these extremes, sometimes using Frames, and sometimes using the specific subclasses as needed.
 @author John Van Hemert
 */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Frame
 {
 	
@@ -477,7 +476,7 @@ public class Frame
 			//conn.createInstanceWGeneratedId(GFPtype);
 			Frame.create(conn,this.getGFPtype(),ID);
 		Iterator<String> iter = slots.keySet().iterator();
-		String key,valueList;
+		String key;//,valueList;
 		ArrayList local,inDB;
 		while(iter.hasNext())
 		{
@@ -517,8 +516,8 @@ public class Frame
 			String slotValue = (String) value;
 			if (slotValueAnnotations.get(slotLabel).get(slotValue) != null) {
 				Iterator<String> iter = slotValueAnnotations.get(slotLabel).get(slotValue).keySet().iterator();
-				String key,valueList;
-				ArrayList annotValues,inDB;
+				String key;//,valueList;
+				ArrayList annotValues;//,inDB;
 				while(iter.hasNext()) {
 					key = iter.next();
 					if(slotValueAnnotations.get(slotLabel).get(slotValue).get(key) != null) {
@@ -565,7 +564,7 @@ public class Frame
 	throws PtoolsErrorException {
 		if(!conn.frameExists(ID))
 			throw new PtoolsErrorException("Frame "+ID+" not in KB.");
-		String oldID = ID;
+//		String oldID = ID;
 		conn.renameFrame(ID,newName);
 		ID = newName;
 		return ID;

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 public class JavacycProtocol
 {
@@ -82,41 +81,41 @@ public class JavacycProtocol
 	}
  }
  
- private String retrieveResultsString()
- {
-	try
-	{
-	    ArrayList<String> results = new ArrayList();
-	    String readStr = in.readLine();
-	    while (readStr != null)
-		{
-		    // DEBUG ONLY
-		    //System.out.println(readStr);
-
-		    results.add(readStr);
-		    readStr = in.readLine();
-		}
-	    String retStr = (String)results.get(0);
-
-	    // DEBUG
-	    //System.out.println("0th element: " + (String)results.get(0));
-
-	    // If retStr is surrounded by quotation marks, remove them
-	    if ((retStr.startsWith("\"")) && (retStr.endsWith("\"")))
-		{
-		    int endIndex = retStr.length() - 1;
-		    return retStr.substring(1, endIndex);
-		}
-	    else
-		{
-		    return retStr;
-		}
-	}
-	catch (IOException e)
-	    {
-		e.printStackTrace();
-	    }
-	return null; // if an IOException has occured
- }
+//private String retrieveResultsString()
+// {
+//	try
+//	{
+//	    ArrayList<String> results = new ArrayList();
+//	    String readStr = in.readLine();
+//	    while (readStr != null)
+//		{
+//		    // DEBUG ONLY
+//		    //System.out.println(readStr);
+//
+//		    results.add(readStr);
+//		    readStr = in.readLine();
+//		}
+//	    String retStr = (String)results.get(0);
+//
+//	    // DEBUG
+//	    //System.out.println("0th element: " + (String)results.get(0));
+//
+//	    // If retStr is surrounded by quotation marks, remove them
+//	    if ((retStr.startsWith("\"")) && (retStr.endsWith("\"")))
+//		{
+//		    int endIndex = retStr.length() - 1;
+//		    return retStr.substring(1, endIndex);
+//		}
+//	    else
+//		{
+//		    return retStr;
+//		}
+//	}
+//	catch (IOException e)
+//	    {
+//		e.printStackTrace();
+//	    }
+//	return null; // if an IOException has occured
+// }
 
 }

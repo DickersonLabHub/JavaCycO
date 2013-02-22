@@ -22,6 +22,7 @@ Catalysis and Promoter object are influencable by activators and inhibitors.
 These methods are not pathway-specific and may contain references to Frames which are not actually in the PGDB.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public abstract class Influenceable extends Frame
 {
 

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 A Promoter is a associated with a TranscriptionUnit.  It is Influeneable.
 @author John Van Hemert
 */
+@SuppressWarnings({"rawtypes"})
 public class Promoter extends Influenceable {
 
 	/**

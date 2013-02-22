@@ -22,6 +22,7 @@ import java.util.HashSet;
 Compounds or metabolites.
 @author John Van Hemert
 */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Compound extends Frame
 {
 	/**

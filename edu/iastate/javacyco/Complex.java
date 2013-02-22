@@ -21,6 +21,7 @@ import java.util.ArrayList;
 Protein Complexes.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public class Complex extends Protein
 {
 	/**

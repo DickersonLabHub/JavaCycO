@@ -8,6 +8,7 @@ import java.util.HashMap;
  * It overrides some Reaction and Frame methods to keep them from attempting to query the PGDB.
  * @author jlv
  */
+@SuppressWarnings({"rawtypes"})
 public class ComplexFormation extends Reaction
 {
 

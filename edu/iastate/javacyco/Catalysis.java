@@ -21,6 +21,7 @@ import java.util.ArrayList;
 This class maps to the PGDB class |Enzymatic-Reactions|.  It relates Reactions to their respective enzymes, cofactors, activators, and inhibitors.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public class Catalysis extends Influenceable
 {
 	/**

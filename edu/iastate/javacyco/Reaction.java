@@ -16,12 +16,12 @@ package edu.iastate.javacyco;
 
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
 The Reaction class is a general super class of the more specific Reaction types.
 @author John Van Hemert
 */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Reaction extends Frame 
 {
 	/**

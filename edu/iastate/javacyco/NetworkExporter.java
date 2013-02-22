@@ -17,6 +17,7 @@ import java.util.HashMap;
  *
  * @author jlv
  */
+@SuppressWarnings({"unchecked"})
 public class NetworkExporter {
 
 	public static void main(String[] args) {
@@ -129,9 +130,9 @@ public class NetworkExporter {
 					net.addMappedAttribute(mappedAttName, map);
 				}
 				
-				String filename = org + ":" + pwyName + ".xgmml";
-				FileOutputStream out = new FileOutputStream(filename);
-				PrintStream ps = new PrintStream(out);
+//				String filename = org + ":" + pwyName + ".xgmml";
+//				FileOutputStream out = new FileOutputStream(filename);
+//				PrintStream ps = new PrintStream(out);
 				
 				if(format.equals("gml"))
 				{

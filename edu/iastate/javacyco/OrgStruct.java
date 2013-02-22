@@ -20,6 +20,7 @@ import java.util.HashMap;
 A HashMap with abstracted get methods.  Not a Frame.
 @author John Van Hemert
 */
+@SuppressWarnings("serial")
 public class OrgStruct extends HashMap<String,String>
 {
 	

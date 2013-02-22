@@ -21,6 +21,7 @@ import java.util.ArrayList;
 The Monomer class.  These may act alone or as components in Complexes.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public class Monomer extends Protein
 {
 	/**

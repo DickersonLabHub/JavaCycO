@@ -5,8 +5,6 @@
 
 package edu.iastate.javacyco;
 
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;

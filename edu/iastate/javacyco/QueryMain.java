@@ -37,7 +37,7 @@ public class QueryMain {
 						String desc = f.getComment();
 						if(desc == null && metacyc.frameExists(f.getLocalID()))
 						{
-							Frame f2 = Frame.load(connection,f.getLocalID());
+//							Frame f2 = Frame.load(connection,f.getLocalID());
 							desc = Frame.load(metacyc,f.getLocalID()).getComment();
 						}
 						if(desc == null) desc = "No summary";

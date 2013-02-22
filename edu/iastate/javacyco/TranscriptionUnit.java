@@ -21,6 +21,7 @@ import java.util.ArrayList;
 TranscriptionUnits are the polycistronic groups of genes which are regulated together by the same promoter and/or enhancers.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public class TranscriptionUnit extends Influenceable {
 
 	/**

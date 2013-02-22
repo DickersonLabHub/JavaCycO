@@ -17,13 +17,13 @@ package edu.iastate.javacyco;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 /**
 The Pathway class.  Groups Reactions together into meaningful processes.
 @author John Van Hemert
 */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Pathway extends Frame
 {
 	/**

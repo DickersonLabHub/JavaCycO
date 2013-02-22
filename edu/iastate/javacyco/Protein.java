@@ -16,7 +16,6 @@ package edu.iastate.javacyco;
 
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
 The Protein class.  All PGDB instances are actually mapped to either javacyc.Monomer or javacyc.Complex, which are subclasses of 
@@ -24,6 +23,7 @@ javacyc.Protein.  Do not create a new PGDB frame of this type as there are no te
 PGDB frames of GFP type Complex.GFPtype or Monomer.GFPtype.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public abstract class Protein extends Frame {
 
 	/**

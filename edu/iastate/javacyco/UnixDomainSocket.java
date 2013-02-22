@@ -23,14 +23,12 @@ package edu.iastate.javacyco;
 // Modified on 05/29/2003 by Thomas Yan to replace deprecated thread code
 
 import java.io.*;
-import java.util.Vector;
 
 /**
  * This class provides a means of connecting to a unix domain socket server.
  *
  * @author Robert Morgan
  */
-
 public class UnixDomainSocket
 {
 

@@ -1,16 +1,5 @@
 package edu.iastate.javacyco;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Savepoint;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeSet;
-
-
 /**
  *  This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -29,24 +18,110 @@ import java.util.TreeSet;
 
 public class Test {
 
-	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
 //		JavacycConnection connection = new JavacycConnection("tht.vrac.iastate.edu",4444);
 //		connection.selectOrganism("ECOLI");
 		
-//		JavacycConnection connection = new JavacycConnection("localhost",4444);
+//		JavacycConnection connection = new JavacycConnection("localhost", 4444);
 //		connection.selectOrganism("MAIZE");
 		
-		JavacycConnection connection = new JavacycConnection("localhost",4444);
-		connection.selectOrganism("CBIRC");
+		JavacycConnection connection = new JavacycConnection("localhost", 4444);
+//		connection.selectOrganism("CORN");
+		connection.selectOrganism("MAIZE");
+//		connection.selectOrganism("ECOLI");
 		try {
+//			connection.getAllGFPInstances("|All-Genes|");
+//			connection.getClassAllInstances("|All-Genes|");
+//			System.out.println("FrameID\tCommonName\tACCESSION-1\tACCESSION-2\tABBREV-NAME\tSYNONYMS");
+//			for (Frame f : connection.getAllGFPInstances("|All-Genes|")) {
+//				Gene gene = (Gene)f;
+////				gene.print();
+//				
+//				System.out.print(gene.getLocalID() + "\t" + gene.getCommonName() + "\t" + gene.getSlotValue("ACCESSION-1") + "\t" + gene.getSlotValue("ACCESSION-2") + "\t" + gene.getSlotValue("ABBREV-NAME") + "\t");
+//				String syn = "";
+//				for (String value : (ArrayList<String>) gene.getSlotValues("SYNONYMS")) syn += value + ",";
+//				if (syn.length() > 0) System.out.print(syn.substring(0, syn.length()-1));
+//				System.out.println();
+////				if (gene.getProducts().size() == 0) System.err.println(gene.getLocalID() + " : No product.");
+////				else {
+////					if (gene.getProducts().size() > 1) {
+////						System.err.println(gene.getLocalID() + " : More than one product.");
+////						String s = "";
+////						for (Frame product : gene.getProducts()) s += product.getLocalID() + ", ";
+////						System.err.println("\t" + s.substring(0, s.length()-2));
+////					}
+////					Frame product = Frame.load(connection, gene.getProducts().get(0).getLocalID());
+////					if (!product.isGFPClass("|Proteins|")) System.err.println(gene.getLocalID() + " : Product not a protein.");
+////				}
+//			}
+			
+			
+//			String encodedDate = connection.callFuncString("encode-universal-time 34 17 13 6 10 2011", false);
+//			System.out.println(encodedDate);
+//			System.out.println(connection.callFuncString("multiple-value-list (decode-universal-time " + encodedDate + ")", false));
+			
+//			for (Frame f : connection.getAllGFPInstances("|Genes|")) {
+//				System.out.println(f.getLocalID() + " :: " + f.getCommonName());
+//			}
+//			
+//			
+//			Frame.load(connection, "GDQC-107985").print();
+//			Frame.load(connection, "GDQC-107985-MONOMER").print();
+			
+//			Frame.load(connection, "GRMZM2G000278_T01").print();
+//			Frame.load(connection, "GRMZM2G000278_P01").print();
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			//updateFrame(connection);
-			
+//			connection.close();
+//			connection.testConnection();
 //			Frame frame = Frame.load(connection, "|Proteins|");
 //			Frame frame = Frame.load(connection, "|Peptides|");
-			Frame frame = Frame.load(connection, "GLC-6-P");
-			frame.print();
+			
+			
+			
+//			ArrayList<String> go = new ArrayList<String>();
+//			go.add("|GO:0001906|");
+//			go.add("|GO:0000036|");
+//			go.add("|GO:0004022|");
+//			connection.putSlotValues("GDQC-106529-MONOMER", "GO-TERMS", JavacycConnection.ArrayList2LispList(go));
+//			connection.importGOTerms(go);
+//			ArrayList<String> values = new ArrayList<String>();
+//			values.add("format nil \"~{~A~#[~:;:~]~}\" '(2987807 EV-EXP-IMP 3501259540 Jesse)");
+//			values.add("\"149128:EV-COMP:3501259540:keseler\"");
+//			values.add("2987807\\:EV-COMP\\:3501259540\\:Jesse");
+//			connection.putAnnotation("GDQC-106529-MONOMER", "GO-TERMS", "|GO:0001906|", "CITATIONS", "\"19131630:EV-EXP-IDA:19131630:keseler\"");
+//			connection.putAnnotation("GDQC-106529-MONOMER", "GO-TERMS", "|GO:0000036|", "CITATIONS", "\"149128:EV-COMP:3501259540:keseler\"");
+//			connection.putAnnotation("GDQC-106529-MONOMER", "GO-TERMS", "|GO:0004022|", "CITATIONS", "\"6328449:EV-COMP:3501259540:keseler\"");
+//			Frame frame = Frame.load(connection, "CPLX0-7715");
+//			frame.print();
+			
+//			for (Frame f : connection.getAllGFPInstances("|Terminators|")) System.out.println(f.getLocalID());
+					
+//			for (Frame f : connection.getAllGFPInstances("|Polypeptides|")) System.out.println(f.getLocalID() + " :: " + f.getSlotValue("DNA-FOOTPRINT-SIZE"));
+//			for (Frame f : connection.getAllGFPInstances("|Protein-Complexes|")) System.out.println(f.getLocalID() + " :: " + f.getSlotValue("DNA-FOOTPRINT-SIZE"));
+//			for (Frame f : connection.getAllGFPInstances("|Protein-Small-Molecule-Complexes|")) System.out.println(f.getLocalID() + " :: " + f.getSlotValue("DNA-FOOTPRINT-SIZE"));
+					
+//			for (Frame fr : connection.getAllGFPInstances("|Genes|")) {
+//				try {
+//					if (connection.getClassAllSupers(fr.getLocalID()).contains("|Unclassified-Genes|")) System.out.println(fr.getLocalID());
+//				} catch (Exception ex) {
+//					
+//				}
+//			}
+			
+			
+//			System.out.println(Frame.load(connection, "|D-Glucose|").isClassFrame());
+//			frame = Frame.load(connection, "NADH-DEHYDROG-A-RXN");
+//			frame.print();
 //			for (Frame f : frame.getDirectSuperClasses()) {
 //				System.out.println(frame.getLocalID());
 //			}
@@ -113,73 +188,4 @@ public class Test {
 			connection.close();
 		}
 	}
-	
-	public void submitItem(String fileName) {
-		File tfLinks = new File(fileName);
-		BufferedReader reader = null;
-		
-		try {
-			reader = new BufferedReader(new FileReader(tfLinks));
-			String text = null;
-			
-			// Ignore Headers
-			reader.readLine();
-			
-			while ((text = reader.readLine()) != null) {
-				String[] line = text.split("\t");
-				
-//				updateFrame(connection);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
- 	public static void updateFrame(JavacycConnection conn) throws PtoolsErrorException {
- 		String frameID = "EG10700";
- 		String geneFullName = "";
- 		String CurrentGeneModelName = "";
- 		String goId = "";
- 		String goTerm = "";
- 		String goEvidenceCode = "";
- 		String pubmedId = "";
- 		String citation = "";
- 		String validation = "";
- 		
- 		if (!conn.frameExists(frameID)) {
- 			System.err.println("Cannot update frame " + frameID + ". Frame does not exist.");
- 			return;
- 		}
- 		
- 		Gene gene = (Gene) Gene.load(conn, frameID);
- 		gene.print();
- 		
- 		gene.putSlotValue("COMMON-NAME", "Hello");
-// 		putSlotValue(slot, value);
-// 		putSlotValue(slot, value);
-// 		putSlotValue(slot, value);
-// 		putSlotValue(slot, value);
- 		
- 		gene.commit();
- 		
- 		gene.print();
-// 		"pfkB"
- 	}
 }

@@ -2,6 +2,7 @@ package edu.iastate.javacyco;
 
 import java.util.ArrayList;
 
+@SuppressWarnings({"rawtypes"})
 public class AnnotationMapper {
 
 	/**

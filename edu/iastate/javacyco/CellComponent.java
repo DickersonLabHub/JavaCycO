@@ -7,7 +7,7 @@ import java.util.ArrayList;
 This class implements SRI's Cell Component Ontology.  These terms are usually associated with a GOCellularCompoennt term.
 @author John Van Hemert
 */
-
+@SuppressWarnings({"unchecked"})
 public class CellComponent extends OntologyTerm {
 
 	/**

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 Terms from the Gene Ontology fall into this super class.  They have 'subsets' (like goslim) and 'members', which are instances assigned to a GO term.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public class GOTerm extends OntologyTerm {
 	
 	/**

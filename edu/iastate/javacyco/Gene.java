@@ -21,6 +21,7 @@ import java.util.ArrayList;
 The Gene class.  In PGDBs, Genes can actually represent DNA or pre- or mRNA, depending on what is store in the PGDB.
 @author John Van Hemert
 */
+@SuppressWarnings({"unchecked"})
 public class Gene extends Frame {
 
 	private String seq;

@@ -15,11 +15,9 @@ package edu.iastate.javacyco;
  */
 
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +34,7 @@ A very handy class for keeping track of Networks of Frames.
  * @author jlv
  *
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Network
 {
 	private String name;
@@ -113,14 +112,14 @@ public class Network
 			
 		}
 		String rst = "";
-		int i=1;
+//		int i=1;
 		for(Object item : aList)
 		{				
 			if(item instanceof ArrayList)
 				rst += "::"+ArrayList2textList((ArrayList)item);
 			else
 				rst += "::"+cleanString(item,false);
-			i++;
+//			i++;
 		}
 		return rst.replace("::::","::").replace("::::","::").replaceAll("^::","");
 	}
@@ -260,7 +259,7 @@ public class Network
 		{//(boolean rich, boolean pathways, HashMap<String,HashMap<String,ArrayList<String>>> nodeAtts,HashMap<String,Integer> GMLids)
 			w.print(f.getXGMML(rich, pathways, nodeAtts, GMLids));
 		}
-		Network n = new Network("temp");
+//		Network n = new Network("temp");
 		for(Network.Edge e : this.edges)
 		{
 			if(directed)
@@ -709,7 +708,7 @@ public class Network
 						try
 						{
 							val = val.replace("(","").replace(")","").replace(" ","").replace("\"","").replace("|","").replaceAll("[a-z]","1");
-							double test = Double.parseDouble(val);
+//							double test = Double.parseDouble(val);
 							//val = cleanString(val);
 						}
 						catch(Exception ex)
@@ -754,7 +753,7 @@ public class Network
 		public void print(PrintStream o)
 		{
 			String inPathways = "";
-			String superPathways = "";
+//			String superPathways = "";
 			
 			for (String pway : this.pathways) {
 				inPathways = inPathways + pway + "::";

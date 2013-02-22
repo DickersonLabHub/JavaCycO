@@ -203,77 +203,77 @@ public class JavacycServer
     	}
     }
     
-    private void listen(int port) throws Exception
-    {
-    	if(verbose) System.out.println("Total mem: "+Runtime.getRuntime().totalMemory());
-    	
-    	PrintWriter toClient;
-		BufferedReader fromClient;
-    	
-		if(verbose) System.out.println("Server waiting to accept on port "+port);
-	    clientSocket = serverSocket.accept();
-	
-    	toClient = new PrintWriter(clientSocket.getOutputStream(), true);
-		fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		
-		String line;
-		
-		if(verbose) System.out.println("Server reading query line from client "+clientSocket.getInetAddress());
-		line = fromClient.readLine();
-		if(verbose) System.out.println("Server received query from client: "+line);
-		if(log) logStream.println(dateFormat.format(new Date())+"\t"+clientSocket.getInetAddress()+"\t"+line);
-		
-		if(line != null && line.startsWith("***")) {
-			String localQuery = line.substring(3);
-			String[] localQueryParts = localQuery.split(":",2);
-			String localFunction = localQueryParts[0];
-			String[] localFunctionParams = localQueryParts.length>1 ? localQueryParts[1].split(",") : null;
-			if(localFunction.equals("PO"))
-			{
-				String org = localFunctionParams[0];
-				if(!org.equals(localConnection.getOrganismID()))
-					localConnection.selectOrganism(org);
-				ArrayList<String> pairs = new ArrayList<String>();
-				LinkedHashMap<String,String> classMap = localConnection.getPathwayOntology(true);
-				toClient.println("(");
-				for(String key : classMap.keySet())
-				{
-					String s = "\""+key+":"+classMap.get(key)+"\"";
-					pairs.add(s);
-					System.out.println(s);
-					toClient.println(s);
-				}
-				toClient.println(")");
-
-//				String resp = JavacycConnection.ArrayList2LispList(pairs);
-//				if(verbose) System.out.println("Response for server side query: "+resp);
-//				toClient.println(resp);
-			}
-		}
-		else
-		{
-			makeSocket();
-			if(verbose) System.out.println("Server writing query line to ptools socket");
-			out.println(line);
-			if(log) lispOut.println(line);
-			
-			int i=0;
-			if(verbose) System.out.println("Server reading response line "+i+" from ptools socket");
-			line = in.readLine();
-	
-			while(line != null)
-			{
-				if(verbose) System.out.println("Server writing response line "+i+" to client: "+line);
-				if(log) lispIn.println(line);
-				toClient.println(line);
-				i++;
-				if(verbose) System.out.println("Server reading response line "+i+" from ptools socket");
-				line = in.readLine();
-			}
-			closeSocket();
-		}
-		clientSocket.close();
-    }
+//    private void listen(int port) throws Exception
+//    {
+//    	if(verbose) System.out.println("Total mem: "+Runtime.getRuntime().totalMemory());
+//    	
+//    	PrintWriter toClient;
+//		BufferedReader fromClient;
+//    	
+//		if(verbose) System.out.println("Server waiting to accept on port "+port);
+//	    clientSocket = serverSocket.accept();
+//	
+//    	toClient = new PrintWriter(clientSocket.getOutputStream(), true);
+//		fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+//		
+//		String line;
+//		
+//		if(verbose) System.out.println("Server reading query line from client "+clientSocket.getInetAddress());
+//		line = fromClient.readLine();
+//		if(verbose) System.out.println("Server received query from client: "+line);
+//		if(log) logStream.println(dateFormat.format(new Date())+"\t"+clientSocket.getInetAddress()+"\t"+line);
+//		
+//		if(line != null && line.startsWith("***")) {
+//			String localQuery = line.substring(3);
+//			String[] localQueryParts = localQuery.split(":",2);
+//			String localFunction = localQueryParts[0];
+//			String[] localFunctionParams = localQueryParts.length>1 ? localQueryParts[1].split(",") : null;
+//			if(localFunction.equals("PO"))
+//			{
+//				String org = localFunctionParams[0];
+//				if(!org.equals(localConnection.getOrganismID()))
+//					localConnection.selectOrganism(org);
+//				ArrayList<String> pairs = new ArrayList<String>();
+//				LinkedHashMap<String,String> classMap = localConnection.getPathwayOntology(true);
+//				toClient.println("(");
+//				for(String key : classMap.keySet())
+//				{
+//					String s = "\""+key+":"+classMap.get(key)+"\"";
+//					pairs.add(s);
+//					System.out.println(s);
+//					toClient.println(s);
+//				}
+//				toClient.println(")");
+//
+////				String resp = JavacycConnection.ArrayList2LispList(pairs);
+////				if(verbose) System.out.println("Response for server side query: "+resp);
+////				toClient.println(resp);
+//			}
+//		}
+//		else
+//		{
+//			makeSocket();
+//			if(verbose) System.out.println("Server writing query line to ptools socket");
+//			out.println(line);
+//			if(log) lispOut.println(line);
+//			
+//			int i=0;
+//			if(verbose) System.out.println("Server reading response line "+i+" from ptools socket");
+//			line = in.readLine();
+//	
+//			while(line != null)
+//			{
+//				if(verbose) System.out.println("Server writing response line "+i+" to client: "+line);
+//				if(log) lispIn.println(line);
+//				toClient.println(line);
+//				i++;
+//				if(verbose) System.out.println("Server reading response line "+i+" from ptools socket");
+//				line = in.readLine();
+//			}
+//			closeSocket();
+//		}
+//		clientSocket.close();
+//    }
 
 
 	 /**

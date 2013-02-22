@@ -20,8 +20,10 @@ PtoolsErrorExceptions are thrown when the PathwayTools server returns the text "
 throw a PtoolsErrorException with the message containing the query which caused the error.  Your application must handle these Exceptions.
 @author John Van Hemert
 */
+@SuppressWarnings("serial")
 public class PtoolsErrorException extends Exception {
 	
+	@SuppressWarnings("unused")
 	private int code = 0;
 
 	public PtoolsErrorException() {
