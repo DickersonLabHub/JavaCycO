@@ -18,7 +18,6 @@ package edu.iastate.javacyco;
 import java.io.*;
 import java.util.*;
 import java.net.Socket;
-import java.net.SocketException;
 
 
 
@@ -34,6 +33,7 @@ import java.net.SocketException;
 	@see <a href='http://bioinformatics.ai.sri.com/ptools/ptools-fns.html'>PathwayTools functions</a>
 	
 */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class JavacycConnection {
 	private Boolean remote;
 	private String server;
@@ -2064,7 +2064,7 @@ public class JavacycConnection {
 				}
 				else
 				{
-					System.out.println("\t"+this.ArrayList2LispList(slotValues));
+					System.out.println("\t"+JavacycConnection.ArrayList2LispList(slotValues));
 					break;
 				}
 			}
@@ -2211,7 +2211,7 @@ public class JavacycConnection {
 	public void backtracePathways(Frame f,Network net,boolean stop)
 	throws PtoolsErrorException {
 		//System.out.println("\t"+"\t"+f.getLocalID()+"\t"+f.getClass().getName());
-		Exception e = new Exception();
+//		Exception e = new Exception();
 		//e.printStackTrace();
 		if(net.containsNode(f))
 		{
