@@ -2725,4 +2725,24 @@ public class JavacycConnection {
     	}
     }
 
+	public GregorianCalendar decodeTimeStamp(String encodedTime) throws PtoolsErrorException {
+		ArrayList<String> decodedTime = callFuncArray("multiple-value-list (decode-universal-time " + encodedTime + ")", false);
+		GregorianCalendar cal = new GregorianCalendar();
+		try{
+			int second = Integer.parseInt(decodedTime.get(0));
+			int minute = Integer.parseInt(decodedTime.get(1));
+			int hour = Integer.parseInt(decodedTime.get(2));
+			int date = Integer.parseInt(decodedTime.get(3));
+			int month = Integer.parseInt(decodedTime.get(4)) - 1; // Gregorian calendar is 0 based for month, while lisp month is 1 based.
+			int year = Integer.parseInt(decodedTime.get(5));
+			cal.set(year, month, date, hour, minute, second);
+		} catch (Exception e) {
+			cal = null;
+		}
+		return cal;
+	}
+
+	public String encodeTimeStamp(String second, String minute, String hour, String date, String month, String year) throws PtoolsErrorException {
+		return callFuncString("encode-universal-time + " + second + " " + minute + " " + hour + " " + date + " " + month + " " + year, false);
+	}
 }
