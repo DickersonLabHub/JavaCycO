@@ -514,6 +514,19 @@ public class JavacycConnection {
 	 }
 	 return rst;
  }
+ 
+	 /**
+	  * 
+	  * @param classFrame
+	  * @return
+	  * @throws PtoolsErrorException
+	  * @author Jesse R Walsh
+	  */
+	 public ArrayList getClassDirectInstances(String classFrame) throws PtoolsErrorException {
+	 	ArrayList rst = new ArrayList();
+			rst = callFuncArray("get-class-direct-instances '" + classFrame);
+			return rst;
+	 }
     
     /**
     Calls getClassAllInstances and loads the Frames referenced by the return list of ids.
@@ -697,7 +710,7 @@ public class JavacycConnection {
      * @param classFrame
      * @return
      * @throws PtoolsErrorException
-     * @author Jesse
+     * @author Jesse R Walsh
      */
     public ArrayList getClassAllSupers(String classFrame) throws PtoolsErrorException {
     	ArrayList rst = new ArrayList();
@@ -710,11 +723,37 @@ public class JavacycConnection {
      * @param classFrame
      * @return
      * @throws PtoolsErrorException
-     * @author Jesse
+     * @author Jesse R Walsh
      */
     public ArrayList getClassDirectSupers(String classFrame) throws PtoolsErrorException {
     	ArrayList rst = new ArrayList();
    		rst = callFuncArray("get-class-direct-supers '" + classFrame);
+   		return rst;
+    }
+    
+    /**
+     * 
+     * @param classFrame
+     * @return
+     * @throws PtoolsErrorException
+     * @author Jesse R Walsh
+     */
+    public ArrayList getClassAllSubs(String classFrame) throws PtoolsErrorException {
+    	ArrayList rst = new ArrayList();
+   		rst = callFuncArray("get-class-all-subs '" + classFrame);
+   		return rst;
+    }
+    
+    /**
+     * 
+     * @param classFrame
+     * @return
+     * @throws PtoolsErrorException
+     * @author Jesse R Walsh
+     */
+    public ArrayList getClassDirectSubs(String classFrame) throws PtoolsErrorException {
+    	ArrayList rst = new ArrayList();
+   		rst = callFuncArray("get-class-direct-subs '" + classFrame);
    		return rst;
     }
 
