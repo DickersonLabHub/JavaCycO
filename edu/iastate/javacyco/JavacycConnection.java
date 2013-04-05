@@ -2430,6 +2430,40 @@ public class JavacycConnection {
 	}
 
 	/**
+	 * @author Jesse Walsh
+    */
+	public Network getClassHierarchy(String rootFrameID, boolean includeInstances, boolean directionForward) throws PtoolsErrorException {
+		Network net = new Network(this.organism + "_class_heirarchy");
+		buildClassHierarchy(rootFrameID, net, includeInstances, directionForward);
+		return net;
+	}
+	
+	 /**
+	  * @author Jesse Walsh
+    */
+	private void buildClassHierarchy(String frameID, Network net, boolean includeInstances, boolean directionForward) throws PtoolsErrorException {
+		if (net.containsNode(frameID)) return;
+		else net.addNode(Frame.load(this, frameID));
+		
+		ArrayList<String> classFrameIDs = new ArrayList<String>();
+		if (directionForward) classFrameIDs = getClassDirectSubs(frameID);
+		else classFrameIDs = getClassDirectSupers(frameID);
+		
+		for(String classFrameID : classFrameIDs) {
+			buildClassHierarchy(classFrameID, net, includeInstances, directionForward);
+			net.addEdge(Frame.load(this, frameID), Frame.load(this, classFrameID), "");
+		}
+		
+		if (includeInstances) {
+			ArrayList<String> instanceIDs = getClassDirectInstances(frameID);
+			for (String instanceID : instanceIDs) {
+				if (!net.containsNode(instanceID)) net.addNode(Frame.load(this, instanceID));
+				net.addEdge(Frame.load(this, frameID),  Frame.load(this, instanceID),  "");
+			}
+		}
+	}
+	
+	/**
     Builds a Network representing the entire class hierarchy of the connected PGDB as a tab-seperated file representing a network.
     @param includeInstances if true, also prints instances of classes, else only prints class frames.
 	return The Network of classes in the PGDB.
@@ -2782,6 +2816,6 @@ public class JavacycConnection {
 	}
 
 	public String encodeTimeStamp(String second, String minute, String hour, String date, String month, String year) throws PtoolsErrorException {
-		return callFuncString("encode-universal-time + " + second + " " + minute + " " + hour + " " + date + " " + month + " " + year, false);
+		return callFuncString("encode-universal-time " + second + " " + minute + " " + hour + " " + date + " " + month + " " + year, false);
 	}
 }
