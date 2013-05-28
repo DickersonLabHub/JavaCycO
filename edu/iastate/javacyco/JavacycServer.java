@@ -45,6 +45,8 @@ public class JavacycServer
     private Boolean log = false;
     int port;
     
+    int authAttempts = 1;
+    
     JavacycConnection localConnection;
     
     public static void main(String[] args)
@@ -137,7 +139,7 @@ public class JavacycServer
 	        	while(!clientDisconnect) {
 		    		switch (state) {
 			    		case CHALLENGE:
-			    			for (int i = 0; i < 3; i++) {
+			    			for (int i = 0; i < authAttempts; i++) {
 			    				state = authenticateClient(fromClient, toClient);
 			    				if (state == ConnectionState.PROCESS) break;
 			    			}

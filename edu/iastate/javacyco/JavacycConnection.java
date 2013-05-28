@@ -18,6 +18,7 @@ package edu.iastate.javacyco;
 import java.io.*;
 import java.util.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 
 
@@ -158,9 +159,10 @@ public class JavacycConnection {
 				if (useLogin) {
 					if (!login()) throw new RuntimeException("Problem logging in to remote server");
 				}
-    		}
-    		catch(Exception e)
-    		{
+    		} catch (UnknownHostException e) {
+    			e.printStackTrace();
+    			throw new RuntimeException("Unknown host"); 
+    		} catch(Exception e) {
     			e.printStackTrace();
     			throw new RuntimeException("Problem connecting to remote socket"); 
     		}
