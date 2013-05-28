@@ -261,6 +261,15 @@ public class Frame
 	}
 	
 	/**
+	 * @author Jesse Walsh 4/29/2013
+	 * @return
+	 * @throws PtoolsErrorException
+	 */
+	public ArrayList<String> getSlotLabels() throws PtoolsErrorException {
+		return conn.getFrameSlots(ID);
+	}
+	
+	/**
 	Get all synonyms for this Frame object.
 	Simply calls getSlotValues("SYNONYMS")
 	@return all synonyms for this Frame object.
@@ -490,7 +499,7 @@ public class Frame
 					//System.out.println("committing "+key+": "+JavacycConnection.ArrayList2LispList(local));
 					if(local.size()==1 && !(local.get(0) instanceof ArrayList))
 					{
-						conn.putSlotValue(ID,key,(String)local.get(0));
+						conn.putSlotValue(ID,key,(String)local.get(0)); //TODO some slots require an array to be inserted.  This code fails when an array is required, but a single value is given.  Example: GO-TERMS
 					}
 					else
 					{
