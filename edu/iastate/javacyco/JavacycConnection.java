@@ -1601,7 +1601,6 @@ public class JavacycConnection {
     private String wrapStringQuery(String func)
     {
 	   return  "(with-organism (:org-id '" + organism + ") (object-name (" + func + ")))";
-
     }
 
     /**
@@ -1649,6 +1648,41 @@ public class JavacycConnection {
 		{
 		    return true;
 		}
+    }
+    
+    /**
+     * 
+     * @author Jesse Walsh 7/29/2013
+     * @throws PtoolsErrorException
+     */
+    private boolean callFuncBool(String func, boolean wrap) throws PtoolsErrorException {
+		String result = callFuncString(func, wrap);
+		if (result==null || result.equals("NIL")) {
+		    return false;
+		} else {
+		    return true;
+		}
+    }
+    
+    /**
+     * Function which determines if the provided database is in a modified state.  The database, if modified, should be either saved or reverted.
+     * 
+     * @author Jesse Walsh 7/29/2013
+     * @throws PtoolsErrorException 
+     */
+    public boolean isCurrentKBModified() throws PtoolsErrorException {
+    	return isModified(null);
+    }
+    
+    /**
+     * Function which determines if the provided database is in a modified state.  The database, if modified, should be either saved or reverted.
+     * 
+     * @author Jesse Walsh 7/29/2013
+     * @throws PtoolsErrorException 
+     */
+    public boolean isModified(String kb) throws PtoolsErrorException {
+    	if (kb == null) return callFuncBool("gfp::kb-modified-p " + "(current-kb)", true); //if kb is null, then query for the currently selected organism
+    	else return callFuncBool("with-organism (:org-id '" + kb + ") (object-name (KB-MODIFIED-P (CURRENT-KB)))", false);
     }
 
     /**
