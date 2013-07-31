@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Set;
 import java.awt.Color;
 
 /**
@@ -146,9 +147,13 @@ public class Frame
 			return conn.getValueAnnot(ID, slotName, slotValue, annotName);
 	}
 	
-	public ArrayList getAnnotations(String slotName,String slotValue,String annotName)
-		throws PtoolsErrorException {
-			return conn.getValueAnnots(ID, slotName, slotValue, annotName);
+	public ArrayList getAnnotations(String slotName,String slotValue,String annotName) throws PtoolsErrorException {
+//		return conn.getValueAnnots(ID, slotName, slotValue, annotName); // Jesse Walsh 6/14/2013 modified to return local values of annotations, rather than remote values which can be obtained with the related JavacycConnection function
+		if (slotValueAnnotations.containsKey(slotName) && slotValueAnnotations.get(slotName).containsKey(slotValue) && slotValueAnnotations.get(slotName).get(slotValue).containsKey(annotName)) {
+			return slotValueAnnotations.get(slotName).get(slotValue).get(annotName);
+		} else
+			return new ArrayList<String>();
+			
 	}
 	
 	protected void loadAnnotations(Frame parent,String parentSlot) throws PtoolsErrorException
@@ -167,7 +172,11 @@ public class Frame
 	*/
 	public ArrayList<String> getAllAnnotLabels(String slotName,String slotValue)
 	throws PtoolsErrorException {
-		return conn.getAllAnnotLabels(ID,slotName,slotValue);
+//		return conn.getAllAnnotLabels(ID,slotName,slotValue); // Jesse Walsh 6/14/2013 frame based methods should return the local values, not remote values
+		if (slotValueAnnotations.containsKey(slotName) && slotValueAnnotations.get(slotName).containsKey(slotValue)) {
+			return new ArrayList<String>(slotValueAnnotations.get(slotName).get(slotValue).keySet());
+		} else
+			return new ArrayList<String>();
 	}
 	
 	/**
@@ -267,6 +276,16 @@ public class Frame
 	 */
 	public ArrayList<String> getSlotLabels() throws PtoolsErrorException {
 		return conn.getFrameSlots(ID);
+	}
+	
+	/**
+	 * @author Jesse Walsh 7/12/2013
+	 * @return
+	 * @throws PtoolsErrorException
+	 */
+	public ArrayList<String> getLocalSlotLabels() throws PtoolsErrorException {
+		ArrayList<String> slotLabels = new ArrayList<String>(slots.keySet());
+		return slotLabels;
 	}
 	
 	/**
@@ -499,7 +518,8 @@ public class Frame
 					//System.out.println("committing "+key+": "+JavacycConnection.ArrayList2LispList(local));
 					if(local.size()==1 && !(local.get(0) instanceof ArrayList))
 					{
-						conn.putSlotValue(ID,key,(String)local.get(0)); //TODO some slots require an array to be inserted.  This code fails when an array is required, but a single value is given.  Example: GO-TERMS
+//						conn.putSlotValue(ID,key,(String)local.get(0)); //TODO some slots require an array to be inserted.  This code fails when an array is required, but a single value is given.  Example: GO-TERMS
+						conn.putSlotValues(ID,key,JavacycConnection.ArrayList2LispList(local));
 					}
 					else
 					{
@@ -1028,6 +1048,68 @@ public class Frame
 	    }
 	    ret += "</node>\n";
 	    return ret;
+	}
+
+	/**
+	 * This method will wipe all local data from this frame and update the local frame to match the data in the remote database.  Loads all slots and annotations to the local frame,
+	 * which may be slow.  This method must be explicitly called, since Frame objects in general operate on a load only-as-needed principle.
+	 * 
+	 * @author Jesse Walsh 7/12/2013
+	 * @throws PtoolsErrorException 
+	 */
+	public void update() throws PtoolsErrorException {
+		slots = new HashMap<String,ArrayList>();
+		slotValueAnnotations = new HashMap<String,HashMap<String,HashMap<String,ArrayList>>>();
+		
+		ArrayList<String> slotsInKb = conn.getFrameSlots(ID);
+		for(String slotName : slotsInKb) {
+			putSlotValues(slotName, conn.getSlotValues(ID, slotName));
+			
+			ArrayList slotValues = getSlotValues(slotName);
+			for (Object slotValueObj : slotValues) {
+				if (slotValueObj instanceof String) {
+					String slotValue = (String) slotValueObj;
+					ArrayList<String> annotationLabels = conn.getAllAnnotLabels(ID, slotName, slotValue);
+					
+					for (String annotationLabel : annotationLabels){
+						ArrayList<String> annotationValues = conn.getValueAnnots(ID, slotName, slotValue, annotationLabel);
+						putLocalSlotValueAnnotations(slotName, slotValue, annotationLabel, annotationValues);
+					}
+				} else {
+					//cannot have annotations for a slot value that is an array of values, so ignore
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Creates a copy of this frame object. Does not deep copy the JavacycConnection object.
+	 * 
+	 * @author Jesse Walsh 7/30/2013
+	 */
+	public Frame copy(String newFrameID) {
+		Frame newFrame = new Frame(conn, newFrameID);
+
+		newFrame.slots.putAll(this.slots);
+		newFrame.GFPtype = this.GFPtype;
+		newFrame.annotations.putAll(this.annotations);
+		newFrame.slotValueAnnotations.putAll(this.slotValueAnnotations);
+		newFrame.pathways.addAll(this.pathways);
+		newFrame.organismID = this.organismID;
+		
+		return newFrame;
+	}
+	
+	/**
+	 * Existing equals method is only a shallow check of the frameID.  This will check if slot/annotation values are the same, ignoring frameID, organismID, pathways, and GFPtype.
+	 * Check is performed on local copies of the frames, so be sure to use the update method if the remote KB values are to be loaded before checking equality;
+	 * 
+	 * @author Jesse Walsh 7/30/2013
+	 */
+	public boolean equalBySlotValues(Frame anotherFrame) {
+		if (!this.slots.equals(anotherFrame.slots)) return false;
+		if (!this.slotValueAnnotations.equals(anotherFrame.slotValueAnnotations)) return false;
+		return true;
 	}
 
 }
