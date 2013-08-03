@@ -774,6 +774,19 @@ public class JavacycConnection {
 		}
 		return rst;
     }
+    
+    /**
+     * @author Jesse Walsh 8/2/2013
+     */
+    public ArrayList getFramePrint(String frameID) throws PtoolsErrorException {
+    	ArrayList results = callFuncText("with-output-to-string (*standard-output*) (print-frame '" + frameID + ")", true);
+		if (results.size() > 0) {
+			results.remove(results.size()-1);//Remove trailing "
+			results.remove(0);//Remove first "
+			results.remove(0);//Remove empty line
+		}
+		return results;
+    }
 
     /**
        Calls the GFP function, put-instance-types
@@ -1631,6 +1644,28 @@ public class JavacycConnection {
 	    return results;
 
     }
+    
+    /**
+     * @author Jesse Walsh 8/2/2013
+     */
+    public ArrayList callFuncText(String func, boolean wrap) throws PtoolsErrorException {
+		makeSocket();
+		ArrayList results = new ArrayList();
+		String query = wrap ? wrapStringQuery(func) : "("+func+")";
+		try {
+		    Long start = System.currentTimeMillis();
+		    sendQuery(query);
+		    results = retrieveResultsText();
+		    Long stop = System.currentTimeMillis();
+		    waits.add(stop-start);
+		} 
+		finally {
+		    closeSocket();
+		}
+	    if(results!=null && results.equals(":error"))
+	    	throw new PtoolsErrorException("The server returned :error for the query "+query);
+	    return results;
+    }
 
     /**
        Private method to call a Pathway Tools function that returns a boolean.
@@ -1755,6 +1790,34 @@ public class JavacycConnection {
 		}
 		catch (IOException e)
 		{
+			e.printStackTrace();
+		}
+		return null; // if an IOException has occured
+    }
+    
+    /**
+     * retrieveResultsText is like retrieveResultsString, but returns a multiple line answer (i.e. formated text block) instead of
+     * only the first line read in.
+     * 
+     * @author Jesse Walsh 8/2/2013
+     */
+    private ArrayList retrieveResultsText() {
+		try {
+		    ArrayList<String> results = new ArrayList();
+		    String readStr = "";
+
+	    	readStr = in.readLine();
+		    while (readStr != null) {
+			    results.add(readStr);
+			    readStr = in.readLine();
+			}
+		    
+		    if(results.size()==0) return null;
+		    results.remove(results.size()-1); //Remove the "eof" indicated by the work "CLOSE" in the last slot
+		    
+		    return results;
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null; // if an IOException has occured

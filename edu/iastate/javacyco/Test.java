@@ -26,7 +26,9 @@ import org.w3c.dom.Element;
 
 public class Test {
 
+	@SuppressWarnings({ "unchecked", "unused" })
 	public static void main(String[] args) {
+		Long start = System.currentTimeMillis();
 //		JavacycConnection connection = new JavacycConnection("tht.vrac.iastate.edu",4444);
 //		connection.selectOrganism("ECOLI");
 		
@@ -39,17 +41,42 @@ public class Test {
 //		connection.selectOrganism("Meta");
 		connection.selectOrganism("ECOLI");
 		try {
-			Frame f = Frame.load(connection, "GLC-6-P");
-			Frame f2 = f.copy(f.getLocalID());
+			System.out.println(connection.callFuncString("do-frame-slots (slot GLC-6-P) (setf len (+ len 1))", false));
 			
-			ArrayList<String> list = new ArrayList<String>();
-			list.add("testValue");
-			f.putLocalSlotValueAnnotations("COMMON-NAME", f.getCommonName(), "test", list);
 			
-			ArrayList<String> list2 = new ArrayList<String>();
-			list2.add("test2Value");
-			f2.putLocalSlotValueAnnotations("COMMON-NAME", f2.getCommonName(), "test", list2);
-			System.out.println(f.equalBySlotValues(f2));
+//			Frame f = Frame.load(connection, "GLC-6-P");
+//			f.getSlotValue("COMMON-NAME");
+//			f.print();
+//			f.update();
+//			f.loadFromKB();
+			
+			//Try Array
+//			String result = "";
+//			ArrayList<String> resultArray = connection.callFuncArray("with-output-to-string (*standard-output*) (print-frame 'GLC-6-P)", false);
+//			for (String s : resultArray) result += s;
+//			System.out.println();
+			
+			//Try String
+//			System.out.println(connection.callFuncString("with-output-to-string (*standard-output*) (print-frame 'GLC-6-P)", false));
+			
+			//Try Text
+//			ArrayList<String> results = connection.callFuncText("with-output-to-string (*standard-output*) (print-frame 'GLC-6-P)", false);
+//			for (String result : results) System.out.println(result);
+			
+//			ArrayList<String> results = connection.callFuncText("with-output-to-string (*standard-output*) (print-frame 'GDQC-104328-MONOMER)", true);
+//			for (String result : results) System.out.println(result);
+			
+			
+//			Frame f2 = f.copy(f.getLocalID());
+//			
+//			ArrayList<String> list = new ArrayList<String>();
+//			list.add("testValue");
+//			f.putLocalSlotValueAnnotations("COMMON-NAME", f.getCommonName(), "test", list);
+//			
+//			ArrayList<String> list2 = new ArrayList<String>();
+//			list2.add("test2Value");
+//			f2.putLocalSlotValueAnnotations("COMMON-NAME", f2.getCommonName(), "test", list2);
+//			System.out.println(f.equalBySlotValues(f2));
 			
 //			System.out.println(connection.isCurrentKBModified());
 			
@@ -251,6 +278,10 @@ public class Test {
 		finally {
 			connection.close();
 		}
+		
+		Long stop = System.currentTimeMillis();
+		Long runtime = (stop - start) / 1000;
+		System.out.println("Runtime is " + runtime + " seconds.");
 	}
 	
 	// Creates a matrix with rows/columns as metabolites.  For each reaction, make an edge from reactant to all products.  If directed = false, also make an edge

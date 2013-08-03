@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.awt.Color;
 
 /**
@@ -1080,6 +1082,89 @@ public class Frame
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Experimental... has some potential to greatly speed up a direct download of a frame, assuming I can parse the print requests nicely
+	 * 
+	 * @author Jesse Walsh 8/2/2013
+	 * @throws PtoolsErrorException 
+	 */
+	public void loadFromKB() throws PtoolsErrorException {
+		slots = new HashMap<String,ArrayList>();
+		slotValueAnnotations = new HashMap<String,HashMap<String,HashMap<String,ArrayList>>>();
+		
+		ArrayList<String> slotsInKb = conn.getFrameSlots(ID);
+		
+		//Process frame print output
+		try {
+			ArrayList<String> frameData = conn.getFramePrint(ID);
+			for (int i = 0; i < frameData.size()-1; i++) {
+				String line = frameData.get(i).trim();
+				if (line.startsWith("---")) { //ignore the title line, go to next blank line
+					while (!line.isEmpty()) {
+						i++;
+						line = frameData.get(i);
+					}
+					continue; 
+				}
+				
+				//Some frame names begin with a colon
+				boolean colon = line.startsWith(":");
+				if (colon) line = line.substring(1, line.length());
+				
+				//Next frame slot
+				String[] lineSplit = line.split(":");
+				String slotLabel = colon ? ":" + line.substring(0, line.indexOf(":")).trim() : line.substring(0, line.indexOf(":")).trim();
+				String slotValues = line.substring(line.indexOf(":")+1).trim();
+				String lastSlotValue = "";
+				for (String slotValue : slotValues.split(",")) {
+					System.out.println(slotLabel + " " + slotValue.trim());
+					lastSlotValue = slotValue;
+				}
+				//Some slot values span multiple lines, continue collecting values
+				while (i < frameData.size() -1) { //Keep collecting values until next blank line
+					i++;
+					line = frameData.get(i).trim();
+					if (!line.isEmpty()) {
+						if (line.startsWith("---")) {
+							line = line.replace("---", "");
+							String annotationLabel = line.substring(0, line.indexOf(":")).trim();
+							String annotationValues = line.substring(line.indexOf(":")+1).trim();
+							for (String annotationValue : annotationValues.split(",")) {
+								System.out.println(slotLabel + " " + lastSlotValue + "  *" + annotationLabel + " " + annotationValue);
+							}
+						} else {
+							for (String slotValue : line.split(",")) {
+								System.out.println(slotLabel + " " + slotValue.trim());
+								lastSlotValue = slotValue;
+							}
+						}
+					} else break;
+				}
+			}
+		} catch (Exception e) {
+			//
+		}
+		
+//		for(String slotName : slotsInKb) {
+//			putSlotValues(slotName, conn.getSlotValues(ID, slotName));
+//			
+//			ArrayList slotValues = getSlotValues(slotName);
+//			for (Object slotValueObj : slotValues) {
+//				if (slotValueObj instanceof String) {
+//					String slotValue = (String) slotValueObj;
+//					ArrayList<String> annotationLabels = conn.getAllAnnotLabels(ID, slotName, slotValue);
+//					
+//					for (String annotationLabel : annotationLabels){
+//						ArrayList<String> annotationValues = conn.getValueAnnots(ID, slotName, slotValue, annotationLabel);
+//						putLocalSlotValueAnnotations(slotName, slotValue, annotationLabel, annotationValues);
+//					}
+//				} else {
+//					//cannot have annotations for a slot value that is an array of values, so ignore
+//				}
+//			}
+//		}
 	}
 	
 	/**
