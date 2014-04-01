@@ -1610,7 +1610,7 @@ public class JavacycConnection {
 		return results;
     }
     
-    String callFuncString(String func) throws PtoolsErrorException
+    private String callFuncString(String func) throws PtoolsErrorException
     {
 	    return callFuncString(func,true);
     }
