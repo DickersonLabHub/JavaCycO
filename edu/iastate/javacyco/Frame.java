@@ -272,6 +272,13 @@ public class Frame
 	}
 	
 	/**
+	 * @author Jesse Walsh 1/10/2014
+	 */
+	public HashMap<String,ArrayList> getLocalSlots() throws PtoolsErrorException {
+		return slots;
+	}
+	
+	/**
 	 * @author Jesse Walsh 4/29/2013
 	 * @return
 	 * @throws PtoolsErrorException
@@ -513,6 +520,14 @@ public class Frame
 			key = iter.next();
 			if(slots.get(key) != null)
 			{
+				// Updated @author Jesse Walsh 8/6/2013 ... slots with :READ-ONLY = T set cannot be written to, so skip that slot.  Example: NAMES slot on |Proteins|
+				Frame slotFrame = Frame.load(conn, key);
+				String value = slotFrame.getSlotValue(":READ-ONLY");
+				if (value != null && slotFrame.getSlotValue(":READ-ONLY").equalsIgnoreCase("T")) {
+					continue;
+				}
+				
+				
 				inDB = conn.getSlotValues(ID,key);
 				local = slots.get(key);
 				if(!JavacycConnection.arrayListsEqual(inDB,local))
@@ -1178,9 +1193,25 @@ public class Frame
 		newFrame.slots.putAll(this.slots);
 		newFrame.GFPtype = this.GFPtype;
 		newFrame.annotations.putAll(this.annotations);
-		newFrame.slotValueAnnotations.putAll(this.slotValueAnnotations);
 		newFrame.pathways.addAll(this.pathways);
 		newFrame.organismID = this.organismID;
+		
+		HashMap<String, HashMap<String, HashMap<String, ArrayList>>> map1 = new HashMap<String, HashMap<String, HashMap<String, ArrayList>>>();
+		for (String key1 : this.slotValueAnnotations.keySet()) {
+			HashMap<String, HashMap<String, ArrayList>> map2 = new HashMap<String, HashMap<String, ArrayList>>();
+			for (String key2 : this.slotValueAnnotations.get(key1).keySet()) {
+				HashMap<String, ArrayList> map3 = new HashMap<String, ArrayList>();
+				for (String key3 : this.slotValueAnnotations.get(key1).get(key2).keySet()) {
+					ArrayList values = new ArrayList();
+					values.addAll(this.slotValueAnnotations.get(key1).get(key2).get(key3));
+					map3.put(key3, values);
+				}
+				map2.put(key2, map3);
+			}
+			map1.put(key1, map2);
+		}
+		newFrame.slotValueAnnotations = map1;
+//		newFrame.slotValueAnnotations.putAll(this.slotValueAnnotations); // Not deep enough, references to annotations are carried over, causeing the clone to be modified if the original is.
 		
 		return newFrame;
 	}
