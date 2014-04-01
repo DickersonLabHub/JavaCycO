@@ -43,6 +43,7 @@ public class JavacycConnection {
 	private String user;
 	private String password;
 	private boolean useLogin;
+	private int queryTimeOutLength;
 	
     private UnixDomainSocket uds; // J-BUDS Unix domain socket
     private String socketName; // name of the socket
@@ -78,6 +79,10 @@ public class JavacycConnection {
     	socketName = "/tmp/ptools-socket";
     	remote = false;
     	commonSetup();
+    }
+    
+    public void setQueryTimeOutLength(int miliseconds) {
+    	queryTimeOutLength = miliseconds;
     }
     
     public boolean isCaching()
@@ -126,6 +131,7 @@ public class JavacycConnection {
     	waits = new ArrayList<Long>();
     	pathwayOntologyCache = new LinkedHashMap<String,String>();
     	cache = new HashMap<String,Frame>();
+    	queryTimeOutLength = 0;
     }
     
     public void testConnection() throws Exception
@@ -153,7 +159,7 @@ public class JavacycConnection {
     		try
     		{
     			socket = new Socket(server,port);
-    			socket.setSoTimeout(10000);
+    			socket.setSoTimeout(queryTimeOutLength);
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				out = new PrintWriter(socket.getOutputStream(),true);
 				if (useLogin) {
@@ -368,6 +374,17 @@ public class JavacycConnection {
     public String deleteFrame(String id)
      throws PtoolsErrorException {
     	String rst = callFuncString("delete-frame '"+id);
+    	return rst;
+    }
+    
+    /**
+     * History:
+     * 3/27/2014 Created to provide access to the "intelligent delete" method in pathway tools. Example existing use is for deleting enzymatic reactions and having
+     * links to the enzyme and reaction objects removed as well.
+     * @author Jesse Walsh 3/27/2014
+ 	*/
+    public String deleteFrameAndDependents(String id) throws PtoolsErrorException {
+    	String rst = callFuncString("delete-frame-and-dependents '"+id);
     	return rst;
     }
     
@@ -1593,7 +1610,7 @@ public class JavacycConnection {
 		return results;
     }
     
-    private String callFuncString(String func) throws PtoolsErrorException
+    String callFuncString(String func) throws PtoolsErrorException
     {
 	    return callFuncString(func,true);
     }
