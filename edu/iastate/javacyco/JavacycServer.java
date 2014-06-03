@@ -371,6 +371,56 @@ public class JavacycServer
 		return ConnectionState.CLOSE;
  	}
  	
+ 	private Frame loadFrameServerSide(String frameID) {
+ 		//TODO is it possible to load the frame object server side faster than over remote connection, then simply serialize the frame and send it to client?
+ 		// will the whole process be faster?
+ 		
+ 		if(verbose) System.out.println("Loading serializable frame: " + frameID);
+ 		
+		makeSocket();
+		
+		/**
+		 * 1)
+		 * (WITH-ORGANISM (ORG-ID 'CORN)
+                    (MAPCAR #'OBJECT-NAME
+                            (GET-INSTANCE-ALL-TYPES 'GLC-6-P)))
+                            
+		 * 2)
+		 * (WITH-ORGANISM (ORG-ID 'CORN)
+                    (OBJECT-NAME (GET-FRAME-TYPE 'GLC-6-P)))
+                    
+		 * 3)
+		 * (WITH-ORGANISM (ORG-ID 'CORN)
+                    (MAPCAR #'OBJECT-NAME (GET-FRAME-SLOTS 'GLC-6-P)))
+                    
+		 * 4)
+		 * (WITH-ORGANISM (ORG-ID 'CORN)
+                    (MAPCAR #'OBJECT-NAME
+                            (GET-SLOT-VALUES 'GLC-6-P 'SYNONYM-SLOTS)))
+         * (WITH-ORGANISM (ORG-ID 'CORN)
+                    (MAPCAR #'OBJECT-NAME
+                            (GET-ALL-ANNOTS 'GLC-6-P 'SYNONYM-SLOTS
+                                            'N+1-NAME)))
+         *** repeat
+		 *
+		 * 5)
+		 * 
+		 *
+		 */
+		
+//		localConnection.getFrameSlots(frameID); //TODO
+//		out.println(line);
+//		line = in.readLine();
+//
+//		while(line != null) {
+//			toClient.println(line);
+//			line = in.readLine();
+//		}
+		closeSocket();
+		
+		return null;
+ 	}
+ 	
  	private ConnectionState authenticateClient(BufferedReader fromClient, PrintWriter toClient) throws IOException {
  		if(verbose) System.out.println("Attempting to authenticate client");
  		String user, pw;

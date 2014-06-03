@@ -605,8 +605,7 @@ public class JavacycConnection {
     */
     public ArrayList putSlotValues(String frame, String slot, String values)
      throws PtoolsErrorException {
-	return callFuncArray("put-slot-values '" + frame + " '" + slot
-			     + " '" + values);
+	return callFuncArray("put-slot-values '" + frame + " '" + slot + " '" + values);
     }
 
     /**
@@ -618,8 +617,7 @@ public class JavacycConnection {
     */
     public ArrayList putSlotValue(String frame, String slot, String value)
      throws PtoolsErrorException {
-	return callFuncArray("put-slot-value '" + frame + " '" + slot 
-			     + " '" + value);
+	return callFuncArray("put-slot-value '" + frame + " '" + slot + " '" + value);
     }
 
     /**
@@ -628,11 +626,21 @@ public class JavacycConnection {
        @param slot a slot name
        @param value a value
        @return any results from the server in an ArrayList
+       
+       Revised 4/24/2014 add-slot-value is bugged and returns errors frequently, perhaps due to the ignored parameters kb, test, add-after?
+       (defun add-slot-value (frame slot value kb test add-after)
+       Now using a put-slot-values call instead.  Prevent overwritting existing values by adding them to values list. Does not check for 
+       duplicates or the collection-type :set. 
     */
-    public ArrayList addSlotValue(String frame, String slot, String value)
-     throws PtoolsErrorException {
-	return callFuncArray("add-slot-value '" + frame + " '" + slot
-			     + " '" + value);
+    public ArrayList addSlotValue(String frame, String slot, String value) throws PtoolsErrorException {
+//    	return callFuncArray("get-raw-values '" + frame + " '" + slot);
+//    	callFuncArray("put-raw-values '" + frame + " '" + slot + "(nconc (subseq values 0 add-after) (cons value (nthcdr add-after values))))");
+//    	
+//    	ArrayList<String> values = getSlotValues(frame, slot);
+//    	values.add(value);
+//    	return putSlotValues(frame, slot, ArrayList2LispList(values));
+    	
+    	return callFuncArray("add-slot-value '" + frame + " '" + slot + " '" + value + " :test #'fequal");
     }
 
     /**
@@ -666,10 +674,24 @@ public class JavacycConnection {
        @param thing a thing
        @return true if thing is a frame object, the name of a frame in kb, or
        handle of frame in kb
+       
+       Modified 4/24/2014 Jesse R. Walsh
+       If space detected return false. Frame IDs can't have spaces, and this API call chokes on them.  Spaces are allowed if thing is enclosed in either "(" or "|"
     */
-    public boolean coercibleToFrameP(String thing)
-     throws PtoolsErrorException {
-	return callFuncBool("coercible-to-frame-p '" + thing);
+    public boolean coercibleToFrameP(String thing) throws PtoolsErrorException {
+    	// Example:
+    	// thing = "artichoke"  ->  Lisp will process 'artichoke and be ok
+    	// thing = "arti choke"  ->  Lisp will process 'arti choke and throw error
+    	// thing = "(arti choke)"  ->  Lisp will process '(arti choke) and be ok
+    	// thing = "|arti choke|"  ->  Lisp will process '|arti choke| and be ok
+    	
+    	if (thing.contains(" ")) { // Frame IDs can't have spaces, so if we detect one, then thing must be quoted to save Pathway Tools from throwing an error.
+    		if ( !(thing.startsWith("(") && thing.endsWith(")")) // if thing is enclosed in parens, it is safe
+    				&& 
+    				!(thing.startsWith("|") && thing.endsWith("|")) ) // if thing is enclosed in bars, it is safe
+    			return false; // if thing is not enclosed in parens or bars, it will cause an error and return false, so just return false instead
+    	}
+    	return callFuncBool("coercible-to-frame-p '" + thing);
     }
 
     /**
@@ -1622,10 +1644,48 @@ public class JavacycConnection {
      * @param goTerms
      * @return
      * @throws PtoolsErrorException
-     * @author Jesse
+     * @author Jesse R. Walsh
      */
     public String importGOTerms(ArrayList goTerms) throws PtoolsErrorException {
     	return callFuncString("import-go-terms '" + ArrayList2LispList(goTerms));
+    }
+    
+//    /**
+//     * doesn't work.... errors ... use addCredit
+//     * @return
+//     * @throws PtoolsErrorException
+//     * @author Jesse R. Walsh 4/22/2014
+//     */
+//    public String addAuthorCredit(String targetFrameLabel, String authorFrameLabel) throws PtoolsErrorException {
+//    	//Force ensures insert even if this author has credit on this object before.
+//    	return callFuncString("add-revised-credit '" + targetFrameLabel + " :author '" + authorFrameLabel + " :force? 'T", true);
+//    }
+//    
+//    /**
+//     * doesn't work.... errors ... use addCredit
+//     * @return
+//     * @throws PtoolsErrorException
+//     * @author Jesse R. Walsh 4/22/2014
+//     */
+//    public String addOrgnizationCredit(String targetFrameLabel, String authorFrameLabel, String organizationFrameLabel) throws PtoolsErrorException {
+//    	if (authorFrameLabel == null || authorFrameLabel.length() == 0) authorFrameLabel = "NIL";
+//    	if (organizationFrameLabel == null || organizationFrameLabel.length() == 0) organizationFrameLabel = "NIL";
+//    	return callFuncString("add-credit-event '" + targetFrameLabel + " (make-credit-event 'revised (delete nil (list '" + authorFrameLabel + " '" + organizationFrameLabel + ")))", true);
+////    	return callFuncString("add-revised-credit '" + targetFrameLabel + " :author () :organization '" + organizationFrameLabel + " :force? 'T", true);
+//    }
+    
+    /**
+     * 
+     * @return
+     * @throws PtoolsErrorException
+     * @author Jesse R. Walsh 4/24/2014
+     */
+    public String addCredit(String targetFrameLabel, String authorFrameLabel, String organizationFrameLabel) throws PtoolsErrorException {
+    	// Could be used for other than the 'revised credits, such as CREATED, REVIEWED, and LAST-CURATED
+    	
+    	if (authorFrameLabel == null || authorFrameLabel.length() == 0) authorFrameLabel = "NIL";
+    	if (organizationFrameLabel == null || organizationFrameLabel.length() == 0) organizationFrameLabel = "NIL";
+    	return callFuncString("add-credit-event '" + targetFrameLabel + " (make-credit-event 'revised (delete nil (list '" + authorFrameLabel + " '" + organizationFrameLabel + ")))", true);
     }
 
     private String wrapStringQuery(String func)

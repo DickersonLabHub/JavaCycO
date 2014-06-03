@@ -1,10 +1,16 @@
 package edu.iastate.javacyco;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+
+import javax.swing.table.DefaultTableModel;
 
 import org.w3c.dom.Element;
 
@@ -35,13 +41,212 @@ public class Test {
 //		JavacycConnection connection = new JavacycConnection("localhost", 4444);
 //		connection.selectOrganism("MAIZE");
 		
-		JavacycConnection connection = new JavacycConnection("jrwalsh.student.iastate.edu", 4444);
+		JavacycConnection conn = new JavacycConnection("jrwalsh.student.iastate.edu", 4444);
 //		connection.selectOrganism("CORN");
 //		connection.selectOrganism("MAIZE");
 //		connection.selectOrganism("Meta");
-		connection.selectOrganism("ECOLI");
+//		conn.selectOrganism("ECOLI");
+		conn.selectOrganism("MANUALTEST");
 		try {
-			System.out.println(connection.callFuncString("do-frame-slots (slot GLC-6-P) (setf len (+ len 1))", false));
+			conn.selectOrganism("Meta");
+			
+			conn.callFuncText("biovelo \"[x^names:x<-corn^^genes]\"", false);
+			
+//			conn.search("geranylgeranyl hydrogenase", "|Proteins|");
+//			for (Frame fra : conn.search("geranylgeranyl hydrogenase", "|Proteins|")) {
+//				System.out.println(fra.getLocalID());
+//			}
+			
+//			Frame fr = Frame.load(conn, "|ODQC-1|");
+//			conn.callFuncArray("add-slot-value '" + "GDQC-114480-MONOMER" + " '" + "COMMENT" + " '" + "\"Hello World\"");
+//			conn.addSlotValue("GDQC-114480-MONOMER", "COMMENT", "\"Hello World\"");
+//			System.out.println(conn.getSlotValues("GDQC-114480-MONOMER", "CREDITS"));
+//			conn.addSlotValue("GDQC-114480-MONOMER", "CREDITS", fr.getLocalID());
+//			conn.putAnnotation("GDQC-114480-MONOMER", "CREDITS", fr.getLocalID(), "REVISED", "3536671559");
+			//conn.addCredit("GDQC-114480-MONOMER", "|sen|", "|ODQC-1|");
+//			conn.addCredit("ENZRXNDQC-140169", "", "|ODQC-1|");
+//			Frame fr = Frame.load(conn, "GDQC-114480-MONOMER");
+//			Frame fr = Frame.load(conn, "CPLX0-7877");
+//			Frame cur = Frame.load(conn, "|tran|");
+//			conn.callFuncString("add-revised-credit '" + fr.getLocalID() + " :author '" + cur.getLocalID() + " :force? 'T", true);
+			if (true) return;
+			
+			HashMap<String, String> regulatees = new HashMap<String, String>();
+			BufferedReader reader = null;
+			try {
+				reader = new BufferedReader(new FileReader("C:\\Users\\Jesse\\Desktop\\NewLinksMapRegulatees.csv"));
+				String text = null;
+				while ((text = reader.readLine()) != null) {
+					try {
+						String[] textSplit = text.split(",");
+						regulatees.put(textSplit[0], textSplit[1]);
+//						if (textSplit.length == 3) {
+//							regulatees.put(textSplit[1], textSplit[3]);
+//						}
+					} catch (Exception e) {
+						System.err.println("Error");
+					}
+				}
+			} catch (FileNotFoundException exception) {
+				exception.printStackTrace();
+			} catch (IOException exception) {
+				exception.printStackTrace();
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+			finally {
+				try {
+				} catch (Exception exception) {
+					exception.printStackTrace();
+				}
+				try {
+					if (reader != null) {
+						reader.close();
+					}
+				} catch (IOException exception) {
+					exception.printStackTrace();
+				}
+			}
+			
+			HashMap<String, String> regulators = new HashMap<String, String>();
+			BufferedReader reader2 = null;
+			try {
+				reader2 = new BufferedReader(new FileReader("C:\\Users\\Jesse\\Desktop\\NewLinksMapRegulators.csv"));
+				String text = null;
+				while ((text = reader2.readLine()) != null) {
+					try {
+						String[] textSplit = text.split(",");
+						regulators.put(textSplit[0], textSplit[1]);
+					} catch (Exception e) {
+						System.err.println("Error");
+					}
+				}
+			} catch (FileNotFoundException exception) {
+				exception.printStackTrace();
+			} catch (IOException exception) {
+				exception.printStackTrace();
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+			finally {
+				try {
+				} catch (Exception exception) {
+					exception.printStackTrace();
+				}
+				try {
+					if (reader2 != null) {
+						reader2.close();
+					}
+				} catch (IOException exception) {
+					exception.printStackTrace();
+				}
+			}
+			
+			BufferedReader reader3 = null;
+			try {
+				reader3 = new BufferedReader(new FileReader("C:\\Users\\Jesse\\Desktop\\NewLinks.txt"));
+				String text = null;
+				while ((text = reader3.readLine()) != null) {
+					try {
+						String[] textSplit = text.split("\t");
+						String regulator = regulators.get(textSplit[0]);
+						String regulatee = regulatees.get(textSplit[1]);
+						String mode = textSplit[2];
+						
+						Gene regulatorGene = (Gene) Gene.load(conn, Protein.load(conn, regulator).getSlotValue("Gene"));
+						ArrayList<String> regulatedGenes = (ArrayList<String>) conn.callFuncArray("genes-regulated-by-gene '" + regulatorGene.getLocalID());
+						if (regulatedGenes.contains(regulatee)) System.out.println("Match regulator " + regulator + " to regulatee " + regulatee);
+						else System.out.println("No match for regulator " + regulator + " to regulatee " + regulatee);
+						
+					} catch (Exception e) {
+						System.err.println("Error");
+					}
+				}
+			} catch (FileNotFoundException exception) {
+				exception.printStackTrace();
+			} catch (IOException exception) {
+				exception.printStackTrace();
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+			finally {
+				try {
+				} catch (Exception exception) {
+					exception.printStackTrace();
+				}
+				try {
+					if (reader3 != null) {
+						reader3.close();
+					}
+				} catch (IOException exception) {
+					exception.printStackTrace();
+				}
+			}
+			
+			/* Commit new regulation
+			String regulationFrameID = conn.callFuncString("create-instance-w-generated-id '" + "|Regulation-of-Transcription|"); 
+			Frame regulation = Frame.load(conn, regulationFrameID);
+			//Frame regulator = Frame.load(conn, "G7326-MONOMER");
+			Frame regulator = Frame.load(conn, "G7326");
+			Frame regulatee = Frame.load(conn, "EG11530");
+			regulation.putSlotValue("regulator", regulator.getLocalID());
+			regulation.putSlotValue("regulated-entity", regulatee.getLocalID());
+			regulation.putSlotValue("mode", "\"+\"");
+			
+			regulation.commit();
+			regulator.commit();
+			regulatee.commit();
+			*/
+			
+			/* Gene deletion strategy... needs proof that it takes care of regulation as well.
+			Gene gene = (Gene) Gene.load(conn, "EG11530");
+			for (Object enzymeName : conn.enzymesOfGene("EG11530")) {
+				Frame enzyme = Frame.load(conn, enzymeName.toString());
+				for (Object catalyzedReaction : enzyme.getSlotValues("CATALYZES")) {
+					conn.deleteFrameAndDependents(catalyzedReaction.toString());
+				}
+			}
+			for (Object product: conn.allProductsOfGene("EG11530")) {
+				if (conn.frameExists(product.toString())) conn.deleteFrameAndDependents(product.toString());
+				else System.out.println("Frame already deleted: " + product.toString());
+			}
+			conn.deleteFrameAndDependents(gene.getLocalID());
+			*/
+			
+			
+			
+			
+//			JavacycConnection conn = new JavacycConnection("jrwalsh.student.iastate.edu", 4444);
+//			conn.selectOrganism("Ecoli");
+//			
+//			for (Object frame : conn.allPathways()) {
+////				Pathway pwy = (Pathway) Pathway.load(conn, "GLYCOLYSIS-TCA-GLYOX-BYPASS");
+//				Pathway pwy = (Pathway) Pathway.load(conn, (String) frame);
+//				for (Reaction rxn : pwy.getReactions()) {
+//					System.out.println(rxn.getLocalID() + "," + frame);
+//				}
+//			}		
+			
+			
+			
+			
+			
+			
+//			getTwoModeAdjacencyMatrix(conn.getReactionList("GLYCOLYSIS-TCA-GLYOX-BYPASS"), conn);
+			
+			
+//			for (Object s : connection.callFuncArray("get-value-annots 'GBWI-69554-MONOMER 'GO-TERMS '|GO:0003899| 'CITATIONS"))
+//				System.out.println(s.toString());
+			
+			
+			
+			// Lets test creating new frames
+//			Frame f = Frame.load(connection, "GDQC-104328-MONOMER");
+//			Frame newFrame = new Frame(connection, "GDQC-104328-MONOMERS");
+//			newFrame.create(connection, "|Polypeptides|", newFrame.getLocalID());
+			//
+			
+//			System.out.println(connection.callFuncString("do-frame-slots (slot GLC-6-P) (setf len (+ len 1))", false));
 			
 			
 //			Frame f = Frame.load(connection, "GLC-6-P");
@@ -276,7 +481,7 @@ public class Test {
 			System.out.println("Caught a "+e.getClass().getName()+". Shutting down...");
 		}
 		finally {
-			connection.close();
+			conn.close();
 		}
 		
 		Long stop = System.currentTimeMillis();
@@ -326,6 +531,48 @@ public class Test {
 		
 	}
 	
+	// Create S matrix in normal (not sparse) form
+	private static void getTwoModeAdjacencyMatrix(ArrayList<String> reactions, JavacycConnection conn) throws PtoolsErrorException {
+		ArrayList<String> reactionList = new ArrayList<String>();
+		ArrayList<String> metaboliteList = new ArrayList<String>();
+		
+		// Just collect all reaction/metabolite labels so we know the size of our matrix and the column/row names
+		for (String reactionLabel : reactions) {
+			reactionList.add(reactionLabel);
+			Reaction reaction = (Reaction) Reaction.load(conn,  reactionLabel);
+			for (Frame metabolite : reaction.getReactants()) {
+				if (!metaboliteList.contains(metabolite.getLocalID())) metaboliteList.add(metabolite.getLocalID());
+			}
+			
+			for (Frame metabolite : reaction.getProducts()) {
+				if (!metaboliteList.contains(metabolite.getLocalID())) metaboliteList.add(metabolite.getLocalID());
+			}
+		}
+		
+		for (String reactionLabel : reactionList) {
+			Reaction reaction = (Reaction) Reaction.load(conn,  reactionLabel);
+			
+			ArrayList<String> reactants = new ArrayList<String>();
+			for (Frame metabolite : reaction.getReactants()) {
+				reactants.add(metabolite.getLocalID());
+			}
+			
+			ArrayList<String> products = new ArrayList<String>();
+			for (Frame metabolite : reaction.getProducts()) {
+				products.add(metabolite.getLocalID());
+			}
+			
+			System.out.print(reactionLabel);
+			for (String metaboliteLabel : metaboliteList) {
+				System.out.print("\t");
+				if (reactants.contains(metaboliteLabel)) System.out.print(-1);
+				else if (products.contains(metaboliteLabel)) System.out.print(1);
+				else System.out.print(0);
+			}
+			System.out.println();
+		}
+	}
+		
 	// Creates a stroichiometric matrix for the given reactions.  Reactions as rows, metabolites as columns.  When a reaction contains a reactant, a negative value equal to the
 	// metabolite coefficient is used.  When reaction contains a product, a positive value equal to the coefficient is used.  Does not yet handle reversible reactions, which should
 	// be done be creating a duplicate version of the reaction.
