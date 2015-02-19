@@ -2640,6 +2640,8 @@ public class JavacycConnection {
 	}
 	
 	/**
+	@deprecated Jesse Walsh 2/19/2015 - for some reason, this method seems to consitently crash Pathway Tools (tested in v17 and v18.5 on EcoCyc and CornCyc) 
+	
     Builds a Network representing the entire class hierarchy of the connected PGDB as a tab-seperated file representing a network.
     @param includeInstances if true, also prints instances of classes, else only prints class frames.
 	return The Network of classes in the PGDB.
