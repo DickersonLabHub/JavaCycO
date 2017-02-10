@@ -57,6 +57,7 @@ public class GetGML {
 				Network net = pwy.getNetwork();
 				if(mapFilename != null)
 				{
+					@SuppressWarnings("resource")
 					BufferedReader mapFileReader = new BufferedReader(new FileReader(mapFilename));
 					String line = null;
 					HashMap<String,String> map = new HashMap<String,String>();

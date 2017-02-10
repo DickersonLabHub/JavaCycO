@@ -20,9 +20,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.awt.Color;
 
 /**
@@ -35,7 +32,7 @@ out to simple class methods.
 Of course, you can also work at any point in-between these extremes, sometimes using Frames, and sometimes using the specific subclasses as needed.
 @author John Van Hemert
 */
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({"rawtypes","unchecked","unused"})
 public class Frame
 {
 	
@@ -1191,7 +1188,6 @@ public class Frame
 		Frame newFrame = new Frame(conn, newFrameID);
 
 		newFrame.slots.putAll(this.slots);
-		newFrame.GFPtype = this.GFPtype;
 		newFrame.annotations.putAll(this.annotations);
 		newFrame.pathways.addAll(this.pathways);
 		newFrame.organismID = this.organismID;

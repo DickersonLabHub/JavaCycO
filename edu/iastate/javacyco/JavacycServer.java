@@ -371,7 +371,8 @@ public class JavacycServer
 		return ConnectionState.CLOSE;
  	}
  	
- 	private Frame loadFrameServerSide(String frameID) {
+ 	@SuppressWarnings("unused")
+	private Frame loadFrameServerSide(String frameID) {
  		//TODO is it possible to load the frame object server side faster than over remote connection, then simply serialize the frame and send it to client?
  		// will the whole process be faster?
  		
